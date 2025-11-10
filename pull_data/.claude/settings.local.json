@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/tianmengwang/Library/CloudStorage/Box-Box/Tianmeng Mac Backup/Projects/**)",
+      "Bash(awk:*)",
+      "Bash(python3.12:*)",
+      "Bash(/opt/homebrew/bin/python3.12:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
