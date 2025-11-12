@@ -29,6 +29,9 @@ Version History:
   * Format: {symbol}_saved_YYYYMMDD_HHMMSS_start_YYYYMMDD_HHMMSS_end_YYYYMMDD_HHMMSS.csv
   * Fixed IB API error handler compatibility with flexible arguments
   * Aggregated timing data saved to single CSV file: stock_download_v2_YYYYMMDD_HHMMSS.csv
+  * Chunk download retry mechanism (max 3 retries per chunk)
+  * Abort stock download if chunk fails after all retries (no incomplete CSV saved)
+  * Type-safe implementation with proper type hints for Pylance compatibility
 
 Author: Data Downloader Script
 """
@@ -50,8 +53,13 @@ import pytz
 # --- Configuration Constants ---
 TRADING_HOURS_RTH = 6.5        # Regular Trading Hours (9:30 - 16:00 ET)
 TRADING_HOURS_EXTENDED = 16.0  # RTH + typical extended sessions (tune as needed)
-DOWNLOAD_TIMEOUT_SECONDS = 60  # Default timeout for download requests
+DOWNLOAD_TIMEOUT_SECONDS = 30  # Default timeout for download requests
 REQUEST_ID_MULTIPLIER = 10000  # Multiplier for base request ID calculation
+CHUNK_HOURS = 3.0              # Default hours per download chunk
+MAX_CHUNK_RETRIES = 3          # Maximum retries for chunk download failures
+WAIT_TIME_BETWEEN_REQUESTS = 2.0 # Wait time (seconds) between API requests to avoid rate limiting
+                                 # Timing breakdown for multiple stocks:
+                                 # - Download chunk 1 for Stock A → wait 2s → chunk 2 → wait 2s → chunk 3 → ... → wait 2s → Start Stock B
 IB_HOST = "127.0.0.1"          # Interactive Brokers host address
 IB_PORT = 7497                 # Interactive Brokers port (7497 for TWS, 4001 for IB Gateway)
 IB_CLIENT_ID = 1               # Default client ID for IB connection
@@ -365,7 +373,7 @@ class StockDataManager:
                 whatToShow=what_to_show,
                 useRTH=1 if use_rth else 0,
                 formatDate=1,
-                keepUpToDate=0,
+                keepUpToDate=False,
                 chartOptions=[]
             )
 
@@ -401,7 +409,7 @@ class StockDataManager:
                             chunk_start_datetime: datetime, chunk_end_datetime: datetime,
                             chunk_duration: float, bars_in_chunk: int,
                             trading_hours_in_chunk: float, data_start: str, data_end: str,
-                            requested_hours: float, use_rth: bool) -> Dict:
+                            requested_hours: float, use_rth: bool, retry_attempt: int = 0) -> Dict:
         """
         Create a timing record for a chunk download.
 
@@ -417,6 +425,7 @@ class StockDataManager:
             data_end: End timestamp of data
             requested_hours: Hours requested for this chunk
             use_rth: Whether RTH was used
+            retry_attempt: Retry attempt number (0 = first attempt, 1+ = retries)
 
         Returns:
             Dictionary containing timing information
@@ -424,6 +433,7 @@ class StockDataManager:
         return {
             'symbol': symbol,
             'chunk_number': chunk_num,
+            'retry_attempt': retry_attempt,
             'chunk_start_time': chunk_start_datetime.strftime("%Y-%m-%d %H:%M:%S"),
             'chunk_end_time': chunk_end_datetime.strftime("%Y-%m-%d %H:%M:%S"),
             'download_duration_seconds': chunk_duration,
@@ -434,6 +444,29 @@ class StockDataManager:
             'requested_hours': requested_hours,
             'use_rth': use_rth
         }
+
+    def _save_timing_record_to_csv(self, timing_record: Dict, timing_csv_path: Optional[Path]) -> None:
+        """
+        Save a timing record immediately to CSV file (incremental save).
+
+        Args:
+            timing_record: Timing record dictionary
+            timing_csv_path: Path to the timing CSV file (if None, skip saving)
+        """
+        if timing_csv_path is None:
+            return
+
+        try:
+            # Append the record as a new line
+            with open(timing_csv_path, 'a') as f:
+                line = f"{timing_record['symbol']},{timing_record['chunk_number']},{timing_record['retry_attempt']}," \
+                       f"{timing_record['chunk_start_time']},{timing_record['chunk_end_time']}," \
+                       f"{timing_record['download_duration_seconds']},{timing_record['bars_downloaded']}," \
+                       f"{timing_record['trading_hours_downloaded']},{timing_record['data_start']}," \
+                       f"{timing_record['data_end']},{timing_record['requested_hours']},{timing_record['use_rth']}\n"
+                f.write(line)
+        except Exception as e:
+            self.logger.error(f"Error saving timing record to CSV: {e}")
 
     def _process_chunk_data(self, chunk_data: list, chunk_num: int,
                           bar_size: str, symbol: str) -> tuple:
@@ -464,7 +497,7 @@ class StockDataManager:
 
             seconds_per_bar = self._parse_bar_size_to_seconds(bar_size)
             bars_in_chunk = len(chunk_data)
-            trading_hours_in_chunk = (bars_in_chunk * seconds_per_bar) / 3600.0
+            trading_hours_in_chunk = round((bars_in_chunk * seconds_per_bar) / 3600.0, 6)
 
             self.logger.info(f"Chunk {chunk_num}: Downloaded {trading_hours_in_chunk:.2f} trading hours "
                            f"({bars_in_chunk} bars from {earliest_date_str} to {latest_date_str})")
@@ -549,11 +582,11 @@ class StockDataManager:
             return f"{symbol}_saved_{save_timestamp}.csv"
 
     def download_stock_with_pagination(self, symbol: str, sec_type: str, currency: str,
-                                      exchange: str, total_days: int, bar_size: str,
+                                      exchange: str, total_days: float, bar_size: str,
                                       what_to_show: str, initial_end_datetime_et: Optional[str],
                                       base_req_id: int,
-                                      use_rth: bool = True, chunk_hours: float = 3.0,
-                                      wait_time: int = 2) -> tuple[Optional[str], list]:
+                                      use_rth: bool = True, chunk_hours: float = CHUNK_HOURS,
+                                      wait_time: float = WAIT_TIME_BETWEEN_REQUESTS, timing_csv_path: Optional[Path] = None) -> tuple[Optional[str], list]:
         """
         Download historical data for a single stock with iterative real-time adjustment.
 
@@ -584,7 +617,7 @@ class StockDataManager:
         all_data = []
         chunk_timing_data = []
         trading_hours_per_day = self.compute_trading_hours_per_day(use_rth)
-        total_trading_hours = total_days * trading_hours_per_day
+        total_trading_hours = round(total_days * trading_hours_per_day, 6)
         hours_downloaded = 0.0
         chunk_num = 0
 
@@ -598,7 +631,7 @@ class StockDataManager:
 
             # Calculate duration for this chunk
             remaining_hours = total_trading_hours - hours_downloaded
-            current_chunk_hours = min(chunk_hours, remaining_hours)
+            current_chunk_hours = round(min(chunk_hours, remaining_hours), 6)
             duration_seconds = int(current_chunk_hours * 3600)
 
             end_datetime_str = current_end.strftime("%Y%m%d %H:%M:%S US/Eastern")
@@ -606,22 +639,22 @@ class StockDataManager:
             self.logger.info(f"Downloading {symbol} chunk {chunk_num} "
                            f"(requesting {current_chunk_hours:.2f} hours, ending at {end_datetime_str}, useRTH={use_rth})")
 
-            # Download chunk and record timing
-            chunk_result = self._download_single_chunk(
+            # Download chunk with retry logic
+            chunk_result = self._download_single_chunk_with_retry(
                 req_id, contract, end_datetime_str, duration_seconds,
                 bar_size, what_to_show, use_rth, symbol, chunk_num,
-                current_chunk_hours, all_data, chunk_timing_data
+                current_chunk_hours, all_data, chunk_timing_data, timing_csv_path
             )
 
             if chunk_result is None:
-                # Failed to request data
-                self.logger.error(f"Failed to request data for {symbol} chunk {chunk_num}")
-                break
+                # Failed after all retries - abort this stock
+                self.logger.error(f"Aborting {symbol} download after chunk {chunk_num} failed all retry attempts")
+                return (None, chunk_timing_data)  # Return None to indicate failure, don't save CSV
 
             hours_downloaded_in_chunk, next_end = chunk_result
 
             # Update progress
-            hours_downloaded += hours_downloaded_in_chunk
+            hours_downloaded = round(hours_downloaded + hours_downloaded_in_chunk, 6)
             if next_end:
                 current_end = next_end
             else:
@@ -660,11 +693,69 @@ class StockDataManager:
         self.logger.info("Using current time as initial end_datetime")
         return end_time
 
+    def _download_single_chunk_with_retry(self, req_id: int, contract: Contract,
+                                          end_datetime_str: str, duration_seconds: int,
+                                          bar_size: str, what_to_show: str, use_rth: bool,
+                                          symbol: str, chunk_num: int, requested_hours: float,
+                                          all_data: list, chunk_timing_data: list,
+                                          timing_csv_path: Optional[Path] = None,
+                                          max_retries: int = MAX_CHUNK_RETRIES) -> Optional[tuple]:
+        """
+        Download a single chunk with retry logic.
+
+        Args:
+            req_id: Base request ID (will be modified for retries)
+            contract: IB Contract object
+            end_datetime_str: End datetime string
+            duration_seconds: Duration in seconds
+            bar_size: Bar size setting
+            what_to_show: What data to show
+            use_rth: Use regular trading hours
+            symbol: Stock symbol
+            chunk_num: Current chunk number
+            requested_hours: Hours requested for this chunk
+            all_data: List to append downloaded data to
+            chunk_timing_data: List to append timing records to
+            max_retries: Maximum number of retry attempts
+
+        Returns:
+            Tuple of (hours_downloaded, next_end_datetime) or None if all retries failed
+        """
+        for retry_attempt in range(max_retries):
+            if retry_attempt > 0:
+                self.logger.warning(f"Retry attempt {retry_attempt}/{max_retries - 1} for {symbol} chunk {chunk_num}")
+                time.sleep(2)  # Wait before retry
+
+            # Use a unique request ID for each retry to avoid conflicts
+            current_req_id = req_id + (retry_attempt * 100000)
+
+            result = self._download_single_chunk(
+                current_req_id, contract, end_datetime_str, duration_seconds,
+                bar_size, what_to_show, use_rth, symbol, chunk_num,
+                requested_hours, all_data, chunk_timing_data, retry_attempt, timing_csv_path
+            )
+
+            if result is not None:
+                hours_downloaded, next_end = result
+                # Check if we got actual data (not just a timeout fallback)
+                if hours_downloaded > 0 and next_end is not None:
+                    if retry_attempt > 0:
+                        self.logger.info(f"Successfully downloaded {symbol} chunk {chunk_num} on retry {retry_attempt}")
+                    return result
+                # If we got no data but also no error, still consider it a success (e.g., NO_DATA status)
+                if self.app and current_req_id in self.app.data and len(self.app.data[current_req_id]) > 0:
+                    return result
+
+        # All retries failed
+        self.logger.error(f"Failed to download {symbol} chunk {chunk_num} after {max_retries} attempts")
+        return None
+
     def _download_single_chunk(self, req_id: int, contract: Contract,
                               end_datetime_str: str, duration_seconds: int,
                               bar_size: str, what_to_show: str, use_rth: bool,
                               symbol: str, chunk_num: int, requested_hours: float,
-                              all_data: list, chunk_timing_data: list) -> Optional[tuple]:
+                              all_data: list, chunk_timing_data: list,
+                              retry_attempt: int = 0, timing_csv_path: Optional[Path] = None) -> Optional[tuple]:
         """
         Download a single chunk of data and update tracking lists.
 
@@ -681,6 +772,7 @@ class StockDataManager:
             requested_hours: Hours requested for this chunk
             all_data: List to append downloaded data to
             chunk_timing_data: List to append timing records to
+            retry_attempt: Retry attempt number (0 = first attempt, 1+ = retries)
 
         Returns:
             Tuple of (hours_downloaded, next_end_datetime) or None if request failed
@@ -721,9 +813,10 @@ class StockDataManager:
 
             timing_record = self._create_timing_record(
                 symbol, chunk_num, chunk_start_datetime, chunk_end_datetime,
-                chunk_duration, 0, 0.0, 'TIMEOUT', 'TIMEOUT', requested_hours, use_rth
+                chunk_duration, 0, 0.0, 'TIMEOUT', 'TIMEOUT', requested_hours, use_rth, retry_attempt
             )
             chunk_timing_data.append(timing_record)
+            self._save_timing_record_to_csv(timing_record, timing_csv_path)
 
             return (requested_hours, None)  # Assume requested hours and signal fallback
 
@@ -737,9 +830,10 @@ class StockDataManager:
             # No data received
             timing_record = self._create_timing_record(
                 symbol, chunk_num, chunk_start_datetime, chunk_end_datetime,
-                chunk_duration, 0, 0.0, 'FAILED', 'FAILED', requested_hours, use_rth
+                chunk_duration, 0, 0.0, 'FAILED', 'FAILED', requested_hours, use_rth, retry_attempt
             )
             chunk_timing_data.append(timing_record)
+            self._save_timing_record_to_csv(timing_record, timing_csv_path)
             return (requested_hours, None)
 
         chunk_data = self.app.data[req_id]
@@ -749,9 +843,10 @@ class StockDataManager:
             self.logger.warning(f"No data for {symbol} chunk {chunk_num}")
             timing_record = self._create_timing_record(
                 symbol, chunk_num, chunk_start_datetime, chunk_end_datetime,
-                chunk_duration, 0, 0.0, 'NO_DATA', 'NO_DATA', requested_hours, use_rth
+                chunk_duration, 0, 0.0, 'NO_DATA', 'NO_DATA', requested_hours, use_rth, retry_attempt
             )
             chunk_timing_data.append(timing_record)
+            self._save_timing_record_to_csv(timing_record, timing_csv_path)
             return (requested_hours, None)
 
         # Process chunk data
@@ -770,9 +865,10 @@ class StockDataManager:
         timing_record = self._create_timing_record(
             symbol, chunk_num, chunk_start_datetime, chunk_end_datetime,
             chunk_duration, len(chunk_data), trading_hours, data_start, data_end,
-            requested_hours, use_rth
+            requested_hours, use_rth, retry_attempt
         )
         chunk_timing_data.append(timing_record)
+        self._save_timing_record_to_csv(timing_record, timing_csv_path)
 
         # Return hours downloaded and next end time
         if trading_hours > 0 and earliest_dt:
@@ -781,7 +877,7 @@ class StockDataManager:
             # Fallback: use requested hours
             return (requested_hours, None)
 
-    def download_stocks(self, wait_time: int = 2) -> Dict[str, str]:
+    def download_stocks(self, wait_time: float = WAIT_TIME_BETWEEN_REQUESTS) -> Dict[str, str]:
         """
         Download historical data for all stocks in configuration with iterative real-time adjustment.
 
@@ -793,10 +889,22 @@ class StockDataManager:
         """
         config_df = self.load_config()
         saved_files = {}
-        all_timing_data = []  # Collect timing data from all stocks
+
+        # Initialize timing CSV file with headers (save incrementally after each chunk)
+        timestamp = datetime.now(self.et_tz).strftime("%Y%m%d_%H%M%S")
+        timing_filename = f"stock_download_v2_{timestamp}.csv"
+        timing_filepath = self.output_dir / timing_filename
+
+        # Create CSV with headers
+        timing_header = "symbol,chunk_number,retry_attempt,chunk_start_time,chunk_end_time,download_duration_seconds,bars_downloaded,trading_hours_downloaded,data_start,data_end,requested_hours,use_rth\n"
+        with open(timing_filepath, 'w') as f:
+            f.write(timing_header)
+
+        self.logger.info(f"Initialized timing data file: {timing_filepath}")
+
         total_stocks = len(config_df)
 
-        for idx, row in config_df.iterrows():
+        for stock_num, (_idx, row) in enumerate(config_df.iterrows(), start=1):
             symbol = row['symbol']
             sec_type = row.get('sec_type', 'STK')
             currency = row.get('currency', 'USD')
@@ -815,38 +923,30 @@ class StockDataManager:
                     # Handle string values like 'true', 'false', 'yes', 'no'
                     use_rth = str(row['use_rth']).lower() not in ('0', 'false', 'no')
 
-            self.logger.info(f"Processing {symbol} ({idx + 1}/{total_stocks}) - "
+            self.logger.info(f"Processing {symbol} ({stock_num}/{total_stocks}) - "
                            f"{total_days} trading days (useRTH={use_rth})...")
 
-            # Use idx * REQUEST_ID_MULTIPLIER as base req_id to avoid conflicts
+            # Use stock_num * REQUEST_ID_MULTIPLIER as base req_id to avoid conflicts
             # (supports up to REQUEST_ID_MULTIPLIER chunks per stock)
-            base_req_id = idx * REQUEST_ID_MULTIPLIER
+            base_req_id = (stock_num - 1) * REQUEST_ID_MULTIPLIER
 
             filepath, chunk_timing_data = self.download_stock_with_pagination(
                 symbol, sec_type, currency, exchange, total_days,
                 bar_size, what_to_show, initial_end_datetime_et,
-                base_req_id, use_rth=use_rth, wait_time=wait_time
+                base_req_id, use_rth=use_rth, wait_time=wait_time,
+                timing_csv_path=timing_filepath
             )
 
             if filepath:
                 saved_files[symbol] = filepath
-
-            # Collect timing data from this stock
-            if chunk_timing_data:
-                all_timing_data.extend(chunk_timing_data)
+            else:
+                self.logger.warning(f"Skipping {symbol} - download failed after retries, no CSV saved")
 
             # Wait between stocks, but not after the last one
-            if idx + 1 < total_stocks:
+            if stock_num < total_stocks:
                 time.sleep(wait_time)
 
-        # Save aggregated timing data for all stocks
-        if all_timing_data:
-            timing_df = pd.DataFrame(all_timing_data)
-            timestamp = datetime.now(self.et_tz).strftime("%Y%m%d_%H%M%S")
-            timing_filename = f"stock_download_v2_{timestamp}.csv"
-            timing_filepath = self.output_dir / timing_filename
-            timing_df.to_csv(timing_filepath, index=False)
-            self.logger.info(f"Saved aggregated timing data ({len(timing_df)} chunks from {total_stocks} stocks) to {timing_filepath}")
+        self.logger.info(f"Completed downloading {len(saved_files)}/{total_stocks} stocks. Timing data saved to {timing_filepath}")
 
         return saved_files
 
@@ -889,7 +989,7 @@ def main():
             return
 
         print("\nDownloading stock data with configurable RTH (v2 with enhanced features)...")
-        saved_files = manager.download_stocks(wait_time=2)
+        saved_files = manager.download_stocks()
 
         print("\n" + "="*60)
         print("Download Summary:")
