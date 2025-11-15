@@ -38,14 +38,14 @@ A Python application for downloading high-frequency historical stock data from I
 
 ### Usage
 
-**Run the downloader:**
+**Run the downloader (v3 - Recommended):**
 ```bash
-python3.12 src/stock_data_downloader_v2.py
+python3.12 src/stock_data_downloader_v3.py
 ```
 
 **With custom paths:**
 ```bash
-python3.12 src/stock_data_downloader_v2.py config/custom_config.csv data/custom_output
+python3.12 src/stock_data_downloader_v3.py config/custom_config.csv data/custom_output
 ```
 
 ### Output
@@ -56,7 +56,7 @@ Data files are saved to `data/` directory with detailed timing information:
 data/
 ├── AAPL_saved_20250127_143000_start_20250126_093000_end_20250127_160000.csv
 ├── TSLA_saved_20250127_143500_start_20250126_093000_end_20250127_160000.csv
-└── stock_download_v2_20250127_143000.csv  # Timing data for all downloads
+└── stock_download_v3_20250127_143000.csv  # Timing data for all downloads
 ```
 
 ## Configuration
@@ -120,9 +120,9 @@ AAPL,STK,USD,SMART,1,1 min,TRADES,,0
 - **Stocks/ETFs**: Use `TRADES`
 - **Indices (SPX, VIX)**: Try `TRADES` first, use `MIDPOINT` if data is sparse
 
-## How It Works (v2)
+## How It Works
 
-Version 2 uses an **iterative approach** that eliminates the need for holiday calendars:
+The downloader uses an **iterative chunk-based approach** with improved architecture (v3):
 
 1. **Request chunk** (e.g., 3 hours of data ending at specified time)
 2. **Analyze actual data received** (e.g., got 2.5 hours of trading data)
@@ -134,6 +134,16 @@ This automatically handles:
 - Weekends (no data = no progress)
 - Early market closes
 - Extended hours vs regular hours
+
+### Architecture (v3)
+
+Version 3 features a refactored, modular architecture:
+- **Separation of concerns**: Focused classes with clear responsibilities
+- **Type safety**: Dataclasses for configuration and results
+- **Better error handling**: Comprehensive logging and retry logic
+- **Testability**: Isolated components for easier unit testing
+
+See `DEVELOPER.md` for detailed architecture information.
 
 ## Output Format
 
@@ -155,7 +165,7 @@ Each CSV contains OHLCV data with timestamps:
 
 ### Timing Data CSV
 
-The aggregated timing file (`stock_download_v2_YYYYMMDD_HHMMSS.csv`) contains:
+The aggregated timing file (`stock_download_v3_YYYYMMDD_HHMMSS.csv`) contains:
 
 - Download performance metrics for each chunk
 - Bars downloaded per chunk
@@ -178,7 +188,7 @@ The aggregated timing file (`stock_download_v2_YYYYMMDD_HHMMSS.csv`) contains:
    - IB Gateway: 4001
 
 **Change port in code if needed:**
-Edit `src/stock_data_downloader_v2.py`:
+Edit `src/stock_data_downloader_v3.py`:
 ```python
 IB_PORT = 4001  # For IB Gateway
 ```
@@ -208,18 +218,18 @@ SPX,IND,USD,CBOE,1,1 min,MIDPOINT,,1
 **Timeout Issues**
 
 If downloads timeout frequently:
-1. Increase timeout in code (default: 2 seconds)
+1. Increase timeout in code (default: 30 seconds)
 2. Reduce chunk size (default: 3 hours)
 3. Check network connection to IB
 
-Edit constants in `src/stock_data_downloader_v2.py`:
+Edit constants in `src/stock_data_downloader_v3.py`:
 ```python
-DOWNLOAD_TIMEOUT_SECONDS = 5  # Increase timeout
+DOWNLOAD_TIMEOUT_SECONDS = 60  # Increase timeout
 ```
 
 ### Logging
 
-Logs are saved to `data/stock_download_v2_YYYYMMDD_HHMMSS.log`
+Logs are saved to `data/stock_download_v3_YYYYMMDD_HHMMSS.log`
 
 **Adjust log levels in code:**
 ```python
@@ -235,8 +245,8 @@ setup_logging(
 
 ```
 pull_data/
-├── README.md                    # This file
-├── DEVELOPMENT.md               # Developer reference
+├── README.md                    # This file (user guide)
+├── DEVELOPER.md                 # Developer reference
 ├── requirements.txt             # Python dependencies
 ├── .gitignore                   # Git ignore rules
 │
@@ -244,7 +254,8 @@ pull_data/
 │   └── stocks_config.csv        # Stock configuration
 │
 ├── src/
-│   └── stock_data_downloader_v2.py  # Main application (v2)
+│   ├── stock_data_downloader_v3.py  # Main application (v3 - Recommended)
+│   └── stock_data_downloader_v2.py  # Legacy version (v2)
 │
 ├── data/                        # Output directory (auto-created)
 │   ├── *.csv                    # Downloaded data files
@@ -256,7 +267,16 @@ pull_data/
 
 ## Version History
 
-### v2 (Current)
+### v3 (Current - Recommended)
+- Refactored architecture with separation of concerns
+- Dataclasses for type safety
+- Improved error handling and retry logic
+- Better testability with focused classes
+- Request ID collision bug fix
+- Production-ready error handling (no assertions)
+- Same performance and features as v2
+
+### v2
 - Iterative download with real-time chunk adjustment
 - Automatic handling of market holidays without calendar
 - Market hours awareness (RTH vs extended)
