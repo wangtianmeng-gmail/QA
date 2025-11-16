@@ -75,6 +75,41 @@ IB_PORT = 7497                 # Interactive Brokers port (7497 for TWS, 4001 fo
 IB_CLIENT_ID = 1               # Default client ID for IB connection
 
 
+# --- Utility Functions ---
+
+def parse_bar_size_to_seconds(bar_size: str) -> int:
+    """
+    Parse bar_size string to seconds per bar.
+
+    Args:
+        bar_size: Bar size string (e.g., "5 secs", "1 min", "1 hour")
+
+    Returns:
+        Number of seconds per bar (defaults to 5 if parsing fails)
+    """
+    bar_size_lower = bar_size.lower().strip()
+    match = re.match(r'(\d+)\s*(\w+)', bar_size_lower)
+
+    if match:
+        value = int(match.group(1))
+        unit = match.group(2)
+
+        if 'sec' in unit:
+            return value
+        elif 'min' in unit:
+            return value * 60
+        elif 'hour' in unit:
+            return value * 3600
+        elif 'day' in unit:
+            return value * 86400
+
+    # Fallback to 5 seconds if parsing fails
+    logging.getLogger('BarSizeParser').warning(
+        f"Failed to parse bar_size '{bar_size}', defaulting to 5 seconds"
+    )
+    return 5
+
+
 # --- Dataclasses ---
 
 @dataclass
@@ -136,31 +171,6 @@ class ChunkSpec:
 
 
 @dataclass
-class ChunkResult:
-    """
-    Result of a chunk download operation.
-
-    Attributes:
-        req_id: Request identifier used for this chunk
-        chunk_num: Sequential chunk number
-        success: Whether the download was successful
-        data: List of data bars downloaded
-        hours_downloaded: Trading hours actually downloaded
-        next_end_datetime: Datetime to use as end time for next chunk (earliest time from this chunk)
-        timing_record: Timing information for this download
-        retry_attempt: Retry attempt number (0 = first attempt, 1+ = retries)
-    """
-    req_id: int
-    chunk_num: int
-    success: bool
-    data: List[Dict]
-    hours_downloaded: float
-    next_end_datetime: Optional[datetime]
-    timing_record: 'TimingRecord'
-    retry_attempt: int = 0
-
-
-@dataclass
 class TimingRecord:
     """
     Timing information for a chunk download.
@@ -193,6 +203,31 @@ class TimingRecord:
     data_end: str
     requested_hours: float
     use_rth: bool
+
+
+@dataclass
+class ChunkResult:
+    """
+    Result of a chunk download operation.
+
+    Attributes:
+        req_id: Request identifier used for this chunk
+        chunk_num: Sequential chunk number
+        success: Whether the download was successful
+        data: List of data bars downloaded
+        hours_downloaded: Trading hours actually downloaded
+        next_end_datetime: Datetime to use as end time for next chunk (earliest time from this chunk)
+        timing_record: Timing information for this download
+        retry_attempt: Retry attempt number (0 = first attempt, 1+ = retries)
+    """
+    req_id: int
+    chunk_num: int
+    success: bool
+    data: List[Dict]
+    hours_downloaded: float
+    next_end_datetime: Optional[datetime]
+    timing_record: TimingRecord
+    retry_attempt: int = 0
 
 
 @dataclass
@@ -440,7 +475,7 @@ class IBDataDownloader(EWrapper, EClient):
         EWrapper.__init__(self)
         EClient.__init__(self, wrapper=self)
         self.data = {}
-        self.data_download_complete = {}
+        self.download_events = {}  # {req_id: threading.Event()}
         self.logger = logging.getLogger('IBDataDownloader')
 
     def error(self, reqId: int, errorCode: int, errorString: str, *_args, **_kwargs):
@@ -488,7 +523,8 @@ class IBDataDownloader(EWrapper, EClient):
             start: Start date of data
             end: End date of data
         """
-        self.data_download_complete[reqId] = True
+        if reqId in self.download_events:
+            self.download_events[reqId].set()
         self.logger.info(f"Data download complete for reqId: {reqId} (from {start} to {end})")
 
 
@@ -496,7 +532,7 @@ class ChunkDownloader:
     """Handle chunk download operations with retry logic and error handling"""
 
     def __init__(self, ib_client: IBDataDownloader, et_tz: pytz.tzinfo.BaseTzInfo,
-                 progress_tracker: ProgressTracker):
+                 progress_tracker: ProgressTracker, req_id_gen: RequestIDGenerator):
         """
         Initialize the chunk downloader.
 
@@ -504,10 +540,12 @@ class ChunkDownloader:
             ib_client: IB API client instance
             et_tz: Eastern timezone for timestamp parsing
             progress_tracker: Progress tracker for recording timing data
+            req_id_gen: Shared request ID generator for unique request IDs
         """
         self.ib_client = ib_client
         self.et_tz = et_tz
         self.progress_tracker = progress_tracker
+        self.req_id_gen = req_id_gen
         self.logger = logging.getLogger('ChunkDownloader')
 
     def download_chunk_with_retry(self, chunk_spec: ChunkSpec, stock_num: int,
@@ -516,8 +554,8 @@ class ChunkDownloader:
         Download a chunk with retry logic (max 3 retries by default).
 
         Args:
-            chunk_spec: Chunk specification
-            stock_num: Stock number for request ID generation
+            chunk_spec: Chunk specification (contains req_id for first attempt)
+            stock_num: Stock number for request ID generation (used for retry attempts)
             max_retries: Maximum retry attempts (default: MAX_CHUNK_RETRIES)
 
         Returns:
@@ -530,12 +568,13 @@ class ChunkDownloader:
                 )
                 time.sleep(WAIT_TIME_BETWEEN_REQUESTS)
 
-            # Generate unique request ID for this retry attempt
-            req_id_gen = RequestIDGenerator()
-            new_req_id = req_id_gen.generate_id(stock_num, chunk_spec.chunk_num, retry_attempt)
-
-            # Update chunk spec with new request ID and retry attempt number
-            retry_spec = replace(chunk_spec, req_id=new_req_id, retry_attempt=retry_attempt)
+                # Generate new request ID for retry attempt using shared generator
+                new_req_id = self.req_id_gen.generate_id(stock_num, chunk_spec.chunk_num, retry_attempt)
+                # Update chunk spec with new request ID and retry attempt number
+                retry_spec = replace(chunk_spec, req_id=new_req_id, retry_attempt=retry_attempt)
+            else:
+                # First attempt - use the req_id already in chunk_spec
+                retry_spec = chunk_spec
 
             result = self._download_single_chunk(retry_spec)
 
@@ -603,7 +642,8 @@ class ChunkDownloader:
             True if request sent successfully, False otherwise
         """
         try:
-            self.ib_client.data_download_complete[chunk_spec.req_id] = False
+            # Create a new threading event for this request
+            self.ib_client.download_events[chunk_spec.req_id] = threading.Event()
 
             self.ib_client.reqHistoricalData(
                 reqId=chunk_spec.req_id,
@@ -631,7 +671,7 @@ class ChunkDownloader:
 
     def _wait_for_download(self, req_id: int, timeout: int = DOWNLOAD_TIMEOUT_SECONDS) -> bool:
         """
-        Wait for data download to complete with timeout.
+        Wait for data download to complete with timeout using threading.Event.
 
         Args:
             req_id: Request identifier to wait for
@@ -640,11 +680,16 @@ class ChunkDownloader:
         Returns:
             True if download completed, False if timeout
         """
-        start_time = time.time()
-        while time.time() - start_time < timeout:
-            if self.ib_client.data_download_complete.get(req_id, False):
-                return True
-            time.sleep(0.1)
+        # Get the event for this request
+        event = self.ib_client.download_events.get(req_id)
+        if not event:
+            self.logger.warning(f"No event found for reqId: {req_id}")
+            return False
+
+        # Wait efficiently using threading.Event - blocks until set() or timeout
+        if event.wait(timeout=timeout):
+            # Event was set - download completed successfully
+            return True
 
         # Timeout - cancel request and cleanup
         self.ib_client.cancelHistoricalData(req_id)
@@ -653,41 +698,11 @@ class ChunkDownloader:
         # Clean up data dictionary entries to prevent stale data
         if req_id in self.ib_client.data:
             del self.ib_client.data[req_id]
-        if req_id in self.ib_client.data_download_complete:
-            del self.ib_client.data_download_complete[req_id]
+        if req_id in self.ib_client.download_events:
+            del self.ib_client.download_events[req_id]
 
         self.logger.warning(f"Timeout waiting for download (reqId: {req_id})")
         return False
-
-    def _parse_bar_size_to_seconds(self, bar_size: str) -> int:
-        """
-        Parse bar_size string to seconds per bar.
-
-        Args:
-            bar_size: Bar size string (e.g., "5 secs", "1 min", "1 hour")
-
-        Returns:
-            Number of seconds per bar
-        """
-        bar_size_lower = bar_size.lower().strip()
-        match = re.match(r'(\d+)\s*(\w+)', bar_size_lower)
-
-        if match:
-            value = int(match.group(1))
-            unit = match.group(2)
-
-            if 'sec' in unit:
-                return value
-            elif 'min' in unit:
-                return value * 60
-            elif 'hour' in unit:
-                return value * 3600
-            elif 'day' in unit:
-                return value * 86400
-
-        # Fallback to 5 seconds if parsing fails
-        self.logger.warning(f"Failed to parse bar_size '{bar_size}', defaulting to 5 seconds")
-        return 5
 
     def _process_chunk_data(self, chunk_data: List[Dict], bar_size: str) -> tuple:
         """
@@ -713,7 +728,7 @@ class ChunkDownloader:
             earliest_dt = datetime.strptime(dt_parts, "%Y%m%d %H:%M:%S")
             earliest_dt = self.et_tz.localize(earliest_dt)
 
-            seconds_per_bar = self._parse_bar_size_to_seconds(bar_size)
+            seconds_per_bar = parse_bar_size_to_seconds(bar_size)
             bars_count = len(chunk_data)
             trading_hours = round((bars_count * seconds_per_bar) / 3600.0, 6)
 
@@ -975,7 +990,7 @@ class StockDataManager:
             self.logger.info(f"Successfully connected to IB at {host}:{port}")
             # Initialize chunk downloader after successful connection
             self.chunk_downloader = ChunkDownloader(
-                self.ib_client, self.et_tz, self.progress_tracker
+                self.ib_client, self.et_tz, self.progress_tracker, self.req_id_gen
             )
             return True
         else:
@@ -1074,7 +1089,7 @@ class StockDataManager:
             remaining_seconds = remaining_hours * 3600
 
             # Parse bar_size to get the minimum granularity
-            bar_size_seconds = self._parse_bar_size_simple(config.bar_size)
+            bar_size_seconds = parse_bar_size_to_seconds(config.bar_size)
 
             if remaining_seconds < bar_size_seconds:
                 self.logger.info(
@@ -1173,36 +1188,6 @@ class StockDataManager:
         self.logger.info("Using current time as initial end_datetime")
         return end_time
 
-    def _parse_bar_size_simple(self, bar_size: str) -> int:
-        """
-        Parse bar size string to seconds (simplified version).
-
-        Args:
-            bar_size: Bar size string (e.g., "5 secs", "1 min")
-
-        Returns:
-            Number of seconds per bar
-        """
-        bar_size_lower = bar_size.lower().strip()
-        match = re.match(r'(\d+)\s*(\w+)', bar_size_lower)
-
-        if match:
-            value = int(match.group(1))
-            unit = match.group(2)
-
-            if 'sec' in unit:
-                return value
-            elif 'min' in unit:
-                return value * 60
-            elif 'hour' in unit:
-                return value * 3600
-            elif 'day' in unit:
-                return value * 86400
-
-        # Fallback to 5 seconds if parsing fails
-        self.logger.warning(f"Failed to parse bar_size '{bar_size}', defaulting to 5 seconds")
-        return 5
-
     def _prepare_chunk_spec(self, config: StockConfig, contract: Contract,
                            progress: DownloadProgress, stock_num: int,
                            chunk_num: int) -> ChunkSpec:
@@ -1224,7 +1209,7 @@ class StockDataManager:
         current_chunk_hours = min(CHUNK_HOURS, remaining_hours)
         duration_seconds = int(current_chunk_hours * 3600)
 
-        # Generate unique request ID
+        # Generate unique request ID for the first attempt (retry_attempt=0)
         req_id = self.req_id_gen.generate_id(stock_num, chunk_num, 0)
 
         # Format end datetime
