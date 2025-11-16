@@ -39,6 +39,7 @@ Version History:
   * Better testability and maintainability
   * Cleaner code structure with single responsibility principle
   * All v2 features maintained with improved architecture
+  * Auto-incrementing request ID generator to eliminate all possible conflicts (replaces formula-based approach)
 
 Author: Data Downloader Script
 """
@@ -168,6 +169,7 @@ class TimingRecord:
         symbol: Stock symbol
         chunk_number: Sequential chunk number
         retry_attempt: Retry attempt number (0 = first attempt, 1+ = retries)
+        req_id: Request ID used for this chunk download
         chunk_start_time: When the chunk download started (format: "YYYY-MM-DD HH:MM:SS")
         chunk_end_time: When the chunk download ended (format: "YYYY-MM-DD HH:MM:SS")
         download_duration_seconds: Duration of download in seconds
@@ -181,6 +183,7 @@ class TimingRecord:
     symbol: str
     chunk_number: int
     retry_attempt: int
+    req_id: int
     chunk_start_time: str
     chunk_end_time: str
     download_duration_seconds: float
@@ -221,13 +224,14 @@ class RequestIDGenerator:
     """Generate unique request IDs for IB API calls to avoid conflicts"""
 
     def __init__(self):
-        """Initialize the request ID generator."""
+        """Initialize the request ID generator with auto-incrementing counter."""
         self.logger = logging.getLogger('RequestIDGenerator')
+        self._counter = 0
 
     def generate_id(self, stock_num: int, chunk_num: int, retry_attempt: int) -> int:
         """
-        Generate unique request ID using formula:
-        (base_req_id * 100000) + (chunk_num * 10) + retry_attempt
+        Generate unique request ID using auto-incrementing counter.
+        This approach guarantees no conflicts regardless of stock count or retry attempts.
 
         Args:
             stock_num: Stock number (1-indexed)
@@ -237,8 +241,8 @@ class RequestIDGenerator:
         Returns:
             Unique request ID
         """
-        base_req_id = (stock_num - 1) * REQUEST_ID_MULTIPLIER
-        req_id = (base_req_id * 100000) + (chunk_num * 10) + retry_attempt
+        self._counter += 1
+        req_id = self._counter
         self.logger.debug(f"Generated req_id={req_id} for stock={stock_num}, chunk={chunk_num}, retry={retry_attempt}")
         return req_id
 
@@ -270,7 +274,7 @@ class ProgressTracker:
         timing_filename = f"stock_download_v3_{timestamp}.csv"
         timing_csv_path = self.output_dir / timing_filename
 
-        header = "symbol,chunk_number,retry_attempt,chunk_start_time,chunk_end_time," \
+        header = "symbol,chunk_number,retry_attempt,req_id,chunk_start_time,chunk_end_time," \
                 "download_duration_seconds,bars_downloaded,trading_hours_downloaded," \
                 "data_start,data_end,requested_hours,use_rth\n"
 
@@ -290,7 +294,7 @@ class ProgressTracker:
         try:
             with open(self.timing_csv_path, 'a') as f:
                 line = f"{timing_record.symbol},{timing_record.chunk_number},{timing_record.retry_attempt}," \
-                       f"{timing_record.chunk_start_time},{timing_record.chunk_end_time}," \
+                       f"{timing_record.req_id},{timing_record.chunk_start_time},{timing_record.chunk_end_time}," \
                        f"{timing_record.download_duration_seconds},{timing_record.bars_downloaded}," \
                        f"{timing_record.trading_hours_downloaded},{timing_record.data_start}," \
                        f"{timing_record.data_end},{timing_record.requested_hours},{timing_record.use_rth}\n"
@@ -506,13 +510,14 @@ class ChunkDownloader:
         self.progress_tracker = progress_tracker
         self.logger = logging.getLogger('ChunkDownloader')
 
-    def download_chunk_with_retry(self, chunk_spec: ChunkSpec,
+    def download_chunk_with_retry(self, chunk_spec: ChunkSpec, stock_num: int,
                                    max_retries: int = MAX_CHUNK_RETRIES) -> Optional[ChunkResult]:
         """
         Download a chunk with retry logic (max 3 retries by default).
 
         Args:
             chunk_spec: Chunk specification
+            stock_num: Stock number for request ID generation
             max_retries: Maximum retry attempts (default: MAX_CHUNK_RETRIES)
 
         Returns:
@@ -525,8 +530,12 @@ class ChunkDownloader:
                 )
                 time.sleep(WAIT_TIME_BETWEEN_REQUESTS)
 
-            # Update chunk spec with retry attempt number
-            retry_spec = replace(chunk_spec, retry_attempt=retry_attempt)
+            # Generate unique request ID for this retry attempt
+            req_id_gen = RequestIDGenerator()
+            new_req_id = req_id_gen.generate_id(stock_num, chunk_spec.chunk_num, retry_attempt)
+
+            # Update chunk spec with new request ID and retry attempt number
+            retry_spec = replace(chunk_spec, req_id=new_req_id, retry_attempt=retry_attempt)
 
             result = self._download_single_chunk(retry_spec)
 
@@ -738,6 +747,7 @@ class ChunkDownloader:
             symbol=chunk_spec.symbol,
             chunk_number=chunk_spec.chunk_num,
             retry_attempt=chunk_spec.retry_attempt,
+            req_id=chunk_spec.req_id,
             chunk_start_time=chunk_start_datetime.strftime("%Y-%m-%d %H:%M:%S"),
             chunk_end_time=chunk_end_datetime.strftime("%Y-%m-%d %H:%M:%S"),
             download_duration_seconds=chunk_duration,
@@ -1084,7 +1094,7 @@ class StockDataManager:
             if self.chunk_downloader is None:
                 self.logger.error("Chunk downloader not initialized")
                 return None
-            result = self.chunk_downloader.download_chunk_with_retry(chunk_spec)
+            result = self.chunk_downloader.download_chunk_with_retry(chunk_spec, stock_num)
 
             if result is None:
                 # Failed after all retries - abort this stock
