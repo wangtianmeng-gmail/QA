@@ -9,213 +9,213 @@ AMD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Advanced Micro Devices Inc
 INTC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Intel Corporation,Technology,NASDAQ,Semiconductor chip manufacturer - PC processors
 AVGO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Broadcom Inc.,Technology,NASDAQ,Semiconductor and infrastructure software solutions
 ADBE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Adobe Inc.,Technology,NASDAQ,Creative software provider - Photoshop and PDF
-CRM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CRM,Technology,NASDAQ,Cloud-based customer relationship management (CRM) platform
-ORCL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ORCL,Technology,NASDAQ,Enterprise software and database management systems
-CSCO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CSCO,Technology,NASDAQ,Networking hardware and telecommunications equipment
-NFLX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,NFLX,Technology,NASDAQ,Streaming entertainment service and content producer
-QCOM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,QCOM,Technology,NASDAQ,Wireless technology and semiconductor company
-TXN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TXN,Technology,NASDAQ,Semiconductor design and manufacturing
-AMAT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AMAT,Technology,NASDAQ,Semiconductor equipment and materials manufacturing
-MU,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MU,Technology,NASDAQ,Memory and storage solutions manufacturer
-LRCX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,LRCX,Technology,NASDAQ,Semiconductor processing equipment manufacturer
-KLAC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,KLAC,Technology,NASDAQ,Process control and yield management solutions
-ADSK,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ADSK,Technology,NASDAQ,3D design and engineering software - AutoCAD
-SNPS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SNPS,Technology,NASDAQ,Electronic design automation (EDA) software
-CDNS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CDNS,Technology,NASDAQ,Electronic design automation and semiconductor IP
-INTU,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,INTU,Technology,NASDAQ,Financial software - TurboTax and QuickBooks
-PANW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PANW,Technology,NASDAQ,Cybersecurity platform and firewall technology
-CRWD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CRWD,Technology,NASDAQ,Cloud-native endpoint security platform
-NOW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,NOW,Technology,NASDAQ,Cloud computing platform for digital workflows
-TEAM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TEAM,Technology,NASDAQ,Team collaboration and productivity software - Jira
-DDOG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DDOG,Technology,NASDAQ,Cloud monitoring and analytics platform
-SNOW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SNOW,Technology,NASDAQ,Cloud-based data warehousing company
-ZS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ZS,Technology,NASDAQ,Cloud security and zero trust network access
-MRVL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MRVL,Technology,NASDAQ,Semiconductor solutions for data infrastructure
-FTNT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,FTNT,Technology,NASDAQ,Network security appliances and unified threat management
-WDAY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,WDAY,Technology,NASDAQ,Cloud-based enterprise applications for finance and HR
-MCHP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MCHP,Technology,NASDAQ,Microcontroller and analog semiconductor provider
-ON,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ON,Technology,NASDAQ,Power and sensing technologies for automotive and industrial
-NXPI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,NXPI,Technology,NASDAQ,Automotive and IoT semiconductor solutions
-ABNB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ABNB,Technology,NASDAQ,Online marketplace for lodging and tourism experiences
-UBER,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,UBER,Technology,NASDAQ,Ride-sharing and food delivery platform
-JNJ,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,JNJ,Healthcare,NYSE,Pharmaceuticals and consumer healthcare products
-UNH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,UNH,Healthcare,NYSE,Health insurance and healthcare services
-PFE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PFE,Healthcare,NYSE,Pharmaceutical company - COVID-19 vaccine developer
-ABBV,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ABBV,Healthcare,NYSE,Biopharmaceutical company - Humira manufacturer
-LLY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,LLY,Healthcare,NYSE,Pharmaceutical company - diabetes and oncology drugs
-TMO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TMO,Healthcare,NYSE,Scientific instrumentation and laboratory equipment
-MRK,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MRK,Healthcare,NYSE,Pharmaceutical company - vaccines and prescription medicines
-ABT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ABT,Healthcare,NYSE,Medical devices and diagnostics
-DHR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DHR,Healthcare,NYSE,Life sciences and diagnostics company
-AMGN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AMGN,Healthcare,NASDAQ,Biotechnology company - biologics and biosimilars
-CVS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CVS,Healthcare,NYSE,Pharmacy and healthcare services
-BMY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,BMY,Healthcare,NYSE,Pharmaceutical company - cancer and immunology treatments
-GILD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,GILD,Healthcare,NASDAQ,Biopharmaceutical company - HIV and hepatitis treatments
-VRTX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,VRTX,Healthcare,NASDAQ,Specialty pharmaceuticals - cystic fibrosis treatments
-ISRG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ISRG,Healthcare,NASDAQ,Robotic surgical systems - da Vinci robot
-JPM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,JPM,Banking,NYSE,Major investment bank and financial services
-BAC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,BAC,Banking,NYSE,Consumer and commercial banking services
-WFC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,WFC,Banking,NYSE,Diversified financial services company
-C,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,C,Banking,NYSE,Global banking and financial services
-GS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,GS,Banking,NYSE,Investment banking and securities firm
-MS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MS,Banking,NYSE,Investment banking and wealth management
-USB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,USB,Banking,NYSE,Commercial and retail banking services
-PNC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PNC,Banking,NYSE,Regional banking and financial services
-TFC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TFC,Banking,NYSE,Commercial and consumer banking
-COF,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,COF,Banking,NYSE,Credit cards and consumer banking
-SCHW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SCHW,Banking,NYSE,Brokerage and banking services
-BLK,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,BLK,Banking,NYSE,Investment management and asset management
-WMT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,WMT,Retail,NYSE,Large retail corporation - discount department stores
-AMZN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AMZN,Retail,NASDAQ,E-commerce and cloud computing services (AWS)
-HD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,HD,Retail,NYSE,Home improvement retail stores
-COST,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,COST,Retail,NASDAQ,Membership warehouse club
-TGT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TGT,Retail,NYSE,General merchandise retailer
-LOW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,LOW,Retail,NYSE,Home improvement and appliance stores
-TJX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TJX,Retail,NYSE,Off-price apparel and home fashion retailer
-ROST,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ROST,Retail,NASDAQ,Off-price department store chain
-DG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DG,Retail,NYSE,Discount variety store chain
-DLTR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DLTR,Retail,NASDAQ,Discount variety stores
-EBAY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,EBAY,Retail,NASDAQ,Online marketplace and auction platform
-BKNG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,BKNG,Retail,NASDAQ,Online travel booking services - Booking.com and Priceline
-XOM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,XOM,Energy,NYSE,Major integrated oil and gas company
-CVX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CVX,Energy,NYSE,Multinational energy corporation
-COP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,COP,Energy,NYSE,Exploration and production company
-SLB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SLB,Energy,NYSE,Oilfield services and equipment
-EOG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,EOG,Energy,NYSE,Oil and natural gas exploration and production
-MPC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MPC,Energy,NYSE,Petroleum refining and marketing
-PSX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PSX,Energy,NYSE,Energy manufacturing and logistics company
-VLO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,VLO,Energy,NYSE,Petroleum refining and ethanol production
-OXY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,OXY,Energy,NYSE,Oil and gas exploration and production
-HAL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,HAL,Energy,NYSE,Oilfield services and products
-PG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PG,Consumer Goods,NYSE,Consumer packaged goods - personal care and cleaning products
-KO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,KO,Consumer Goods,NYSE,Beverage manufacturer - soft drinks
-PEP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PEP,Consumer Goods,NASDAQ,Food and beverage company - snacks and soft drinks
-PM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PM,Consumer Goods,NYSE,Tobacco company - international markets
-MO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MO,Consumer Goods,NYSE,Tobacco products - Marlboro brand
-MDLZ,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MDLZ,Consumer Goods,NASDAQ,Snack foods manufacturer - Oreo and Cadbury
-CL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CL,Consumer Goods,NYSE,Oral care and personal care products
-KMB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,KMB,Consumer Goods,NYSE,Personal care products - Kleenex and Huggies
-GIS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,GIS,Consumer Goods,NYSE,Food products - cereals and packaged foods
-K,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,K,Consumer Goods,NYSE,Breakfast cereals and snack foods
-GE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,GE,Industrial,NYSE,Diversified industrial conglomerate - aviation and power
-HON,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,HON,Industrial,NASDAQ,Diversified technology and manufacturing
-UPS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,UPS,Industrial,NYSE,Package delivery and supply chain management
-CAT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CAT,Industrial,NYSE,Construction and mining equipment manufacturer
-BA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,BA,Industrial,NYSE,Aerospace manufacturer - commercial and defense aircraft
-MMM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MMM,Industrial,NYSE,Diversified technology company - industrial and consumer products
-LMT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,LMT,Industrial,NYSE,Aerospace and defense contractor
-RTX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,RTX,Industrial,NYSE,Aerospace and defense systems
-DE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DE,Industrial,NYSE,Agricultural and construction equipment manufacturer
-EMR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,EMR,Industrial,NYSE,Manufacturing and technology company
-V,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,V,Financial Services,NYSE,Payment processing and credit card services
-MA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MA,Financial Services,NYSE,Payment processing network
-AXP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AXP,Financial Services,NYSE,Credit card and payment services
-PYPL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PYPL,Financial Services,NASDAQ,Digital payments platform
-SPGI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SPGI,Financial Services,NYSE,Financial information and analytics
-CME,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CME,Financial Services,NASDAQ,Derivatives marketplace
-ICE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ICE,Financial Services,NYSE,Financial and commodity exchanges operator
-FIS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,FIS,Financial Services,NYSE,Financial services technology
-FI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,FI,Financial Services,NYSE,Fidelity National Information Services
-ADP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ADP,Financial Services,NASDAQ,Payroll and human resources services
-T,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,T,Telecommunications,NYSE,Telecommunications and media services
-VZ,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,VZ,Telecommunications,NYSE,Wireless telecommunications carrier
-TMUS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TMUS,Telecommunications,NASDAQ,Wireless network operator
-CMCSA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CMCSA,Telecommunications,NASDAQ,Cable television and internet services provider
-CHTR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CHTR,Telecommunications,NASDAQ,Cable and broadband services - Spectrum brand
-DIS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DIS,Telecommunications,NYSE,Entertainment and media conglomerate
-SATS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SATS,Telecommunications,NASDAQ,Satellite communications and connectivity services
-VIV,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,VIV,Telecommunications,NYSE,Brazilian telecommunications services
-TEF,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TEF,Telecommunications,NYSE,Spanish multinational telecommunications company
-NEE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,NEE,Utilities,NYSE,Electric power and renewable energy company
-DUK,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DUK,Utilities,NYSE,Electric power holding company
-SO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SO,Utilities,NYSE,Electric utility holding company
-D,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,D,Utilities,NYSE,Power and energy infrastructure
-AEP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AEP,Utilities,NASDAQ,Electric utility company
-EXC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,EXC,Utilities,NASDAQ,Energy generation and distribution
-XEL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,XEL,Utilities,NASDAQ,Electricity and natural gas utility
-SRE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SRE,Utilities,NYSE,Energy services holding company
-PEG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PEG,Utilities,NYSE,Energy company serving New Jersey
-ED,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ED,Utilities,NYSE,Energy delivery company - New York area
-NKE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,NKE,Apparel,NYSE,Athletic footwear and apparel manufacturer
-LULU,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,LULU,Apparel,NASDAQ,Athletic apparel and yoga wear
-ADDYY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ADDYY,Apparel,OTC,German sporting goods manufacturer
-VFC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,VFC,Apparel,NYSE,Apparel and footwear company - Vans and North Face
-FOSL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,FOSL,Apparel,NASDAQ,Fashion accessories - watches and jewelry
-UAA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,UAA,Apparel,NYSE,Sports clothing and accessories
-PVH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PVH,Apparel,NYSE,Apparel company - Calvin Klein and Tommy Hilfiger
-RL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,RL,Apparel,NYSE,Luxury fashion and lifestyle brand
-CPRI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CPRI,Apparel,NYSE,Luxury fashion - Michael Kors and Versace
-TPR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TPR,Apparel,NYSE,Luxury accessories - Coach and Kate Spade
-MCD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MCD,Food & Beverage,NYSE,Fast food restaurant chain
-SBUX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SBUX,Food & Beverage,NASDAQ,Coffeehouse chain
-YUM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,YUM,Food & Beverage,NYSE,Fast food franchises - KFC and Taco Bell
-CMG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CMG,Food & Beverage,NYSE,Fast-casual restaurant chain
-QSR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,QSR,Food & Beverage,NYSE,Fast food holding company - Burger King and Tim Hortons
-DPZ,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DPZ,Food & Beverage,NYSE,Pizza restaurant chain
-WEN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,WEN,Food & Beverage,NASDAQ,Fast food hamburger restaurant chain
-DRI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DRI,Food & Beverage,NYSE,Full-service restaurant company - Olive Garden
-TXRH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TXRH,Food & Beverage,NASDAQ,Casual dining restaurant chain
-MAR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MAR,Hospitality,NASDAQ,Hotel and lodging company
-HLT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,HLT,Hospitality,NYSE,Global hospitality company
-H,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,H,Hospitality,NYSE,Hotel operator and franchisor
-IHG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,IHG,Hospitality,NYSE,International hotel company
-WH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,WH,Hospitality,NYSE,Hotel franchisor
-RCL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,RCL,Hospitality,NYSE,Cruise line operator
-CCL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CCL,Hospitality,NYSE,Cruise line operator
-NCLH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,NCLH,Hospitality,NYSE,Cruise line company
-MGM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MGM,Hospitality,NYSE,Casino and resort operator
-LVS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,LVS,Hospitality,NYSE,Casino and resort developer
-F,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,F,Automotive,NYSE,American automobile manufacturer
-GM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,GM,Automotive,NYSE,Automobile manufacturing company
-TM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TM,Automotive,NYSE,Japanese multinational automotive manufacturer
-HMC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,HMC,Automotive,NYSE,Japanese automotive and motorcycle manufacturer
-STLA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,STLA,Automotive,NYSE,Multinational automotive corporation - Jeep and Chrysler
-RACE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,RACE,Automotive,NYSE,Luxury sports car manufacturer
-RIVN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,RIVN,Automotive,NASDAQ,Electric vehicle manufacturer - trucks and SUVs
-LCID,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,LCID,Automotive,NASDAQ,Luxury electric vehicle manufacturer
-NIO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,NIO,Automotive,NYSE,Chinese electric vehicle manufacturer
-BIIB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,BIIB,Pharmaceuticals,NASDAQ,Biotechnology company - neurological diseases
-REGN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,REGN,Pharmaceuticals,NASDAQ,Biotechnology company - monoclonal antibodies
-AAL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AAL,Airlines,NASDAQ,Major US airline carrier
-DAL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DAL,Airlines,NYSE,Major US airline carrier
-UAL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,UAL,Airlines,NASDAQ,Major US airline carrier
-LUV,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,LUV,Airlines,NYSE,Low-cost airline carrier
-ALK,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ALK,Airlines,NYSE,Regional airline company
-JBLU,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,JBLU,Airlines,NASDAQ,Low-cost airline carrier
-SKYW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SKYW,Airlines,NASDAQ,Regional airline operator
-RYAAY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,RYAAY,Airlines,NASDAQ,European low-cost airline
-SHOP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SHOP,E-commerce,NYSE,E-commerce platform for online stores
-MELI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MELI,E-commerce,NASDAQ,Latin American e-commerce and fintech platform
-BABA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,BABA,E-commerce,NYSE,Chinese multinational e-commerce company
-JD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,JD,E-commerce,NASDAQ,Chinese e-commerce company
-PDD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PDD,E-commerce,NASDAQ,Chinese e-commerce platform
-ETSY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ETSY,E-commerce,NASDAQ,Online marketplace for handmade and vintage items
-W,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,W,E-commerce,NYSE,Online home goods retailer
-CHWY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CHWY,E-commerce,NYSE,Online pet supplies retailer
-BRK B,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,BRK B,Insurance,NYSE,Diversified holding company led by Warren Buffett
-PGR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PGR,Insurance,NYSE,Auto insurance company
-ALL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ALL,Insurance,NYSE,Personal lines insurance company
-TRV,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,TRV,Insurance,NYSE,Insurance and financial services company
-MET,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MET,Insurance,NYSE,Life insurance and employee benefits company
-PRU,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PRU,Insurance,NYSE,Financial services and insurance company
-AIG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AIG,Insurance,NYSE,Multinational insurance corporation
-AFL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AFL,Insurance,NYSE,Supplemental insurance provider
-HIG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,HIG,Insurance,NYSE,Property and casualty insurance
-CB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CB,Insurance,NYSE,Property and casualty insurance company
-ENPH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ENPH,Renewable Energy,NASDAQ,Solar microinverter systems manufacturer
-SEDG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SEDG,Renewable Energy,NASDAQ,Solar power optimization and monitoring
-RUN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,RUN,Renewable Energy,NASDAQ,Residential solar energy company
-FSLR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,FSLR,Renewable Energy,NASDAQ,Solar panel manufacturer
-PLUG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PLUG,Renewable Energy,NASDAQ,Hydrogen fuel cell systems
-BE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,BE,Renewable Energy,NYSE,Solid oxide fuel cell power generation
-ORA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ORA,Renewable Energy,NYSE,Geothermal and recovered energy power
-AMT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AMT,Real Estate,NYSE,Wireless and broadcast communication infrastructure REIT
-PLD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PLD,Real Estate,NYSE,Industrial real estate investment trust
-CCI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CCI,Real Estate,NYSE,Telecommunications infrastructure REIT
-EQIX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,EQIX,Real Estate,NASDAQ,Data center real estate investment trust
-PSA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PSA,Real Estate,NYSE,Self-storage real estate investment trust
-WELL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,WELL,Real Estate,NYSE,Healthcare real estate investment trust
-DLR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,DLR,Real Estate,NYSE,Data center real estate investment trust
-O,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,O,Real Estate,NYSE,Commercial real estate investment trust
-SPG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SPG,Real Estate,NYSE,Shopping mall real estate investment trust
-AVB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AVB,Real Estate,NYSE,Residential real estate investment trust
+CRM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Salesforce Inc.,Technology,NASDAQ,Cloud-based customer relationship management (CRM) platform
+ORCL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Oracle Corporation,Technology,NASDAQ,Enterprise software and database management systems
+CSCO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Cisco Systems Inc.,Technology,NASDAQ,Networking hardware and telecommunications equipment
+NFLX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Netflix Inc.,Technology,NASDAQ,Streaming entertainment service and content producer
+QCOM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Qualcomm Incorporated,Technology,NASDAQ,Wireless technology and semiconductor company
+TXN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Texas Instruments Incorporated,Technology,NASDAQ,Semiconductor design and manufacturing
+AMAT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Applied Materials Inc.,Technology,NASDAQ,Semiconductor equipment and materials manufacturing
+MU,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Micron Technology Inc.,Technology,NASDAQ,Memory and storage solutions manufacturer
+LRCX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Lam Research Corporation,Technology,NASDAQ,Semiconductor processing equipment manufacturer
+KLAC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,KLA Corporation,Technology,NASDAQ,Process control and yield management solutions
+ADSK,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Autodesk Inc.,Technology,NASDAQ,3D design and engineering software - AutoCAD
+SNPS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Synopsys Inc.,Technology,NASDAQ,Electronic design automation (EDA) software
+CDNS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Cadence Design Systems Inc.,Technology,NASDAQ,Electronic design automation and semiconductor IP
+INTU,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Intuit Inc.,Technology,NASDAQ,Financial software - TurboTax and QuickBooks
+PANW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Palo Alto Networks Inc.,Technology,NASDAQ,Cybersecurity platform and firewall technology
+CRWD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CrowdStrike Holdings Inc.,Technology,NASDAQ,Cloud-native endpoint security platform
+NOW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ServiceNow Inc.,Technology,NASDAQ,Cloud computing platform for digital workflows
+TEAM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Atlassian Corporation,Technology,NASDAQ,Team collaboration and productivity software - Jira
+DDOG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Datadog Inc.,Technology,NASDAQ,Cloud monitoring and analytics platform
+SNOW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Snowflake Inc.,Technology,NASDAQ,Cloud-based data warehousing company
+ZS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Zscaler Inc.,Technology,NASDAQ,Cloud security and zero trust network access
+MRVL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Marvell Technology Inc.,Technology,NASDAQ,Semiconductor solutions for data infrastructure
+FTNT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Fortinet Inc.,Technology,NASDAQ,Network security appliances and unified threat management
+WDAY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Workday Inc.,Technology,NASDAQ,Cloud-based enterprise applications for finance and HR
+MCHP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Microchip Technology Inc.,Technology,NASDAQ,Microcontroller and analog semiconductor provider
+ON,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ON Semiconductor Corporation,Technology,NASDAQ,Power and sensing technologies for automotive and industrial
+NXPI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,NXP Semiconductors N.V.,Technology,NASDAQ,Automotive and IoT semiconductor solutions
+ABNB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Airbnb Inc.,Technology,NASDAQ,Online marketplace for lodging and tourism experiences
+UBER,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Uber Technologies Inc.,Technology,NASDAQ,Ride-sharing and food delivery platform
+JNJ,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Johnson & Johnson,Healthcare,NYSE,Pharmaceuticals and consumer healthcare products
+UNH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,UnitedHealth Group Incorporated,Healthcare,NYSE,Health insurance and healthcare services
+PFE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Pfizer Inc.,Healthcare,NYSE,Pharmaceutical company - COVID-19 vaccine developer
+ABBV,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AbbVie Inc.,Healthcare,NYSE,Biopharmaceutical company - Humira manufacturer
+LLY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Eli Lilly and Company,Healthcare,NYSE,Pharmaceutical company - diabetes and oncology drugs
+TMO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Thermo Fisher Scientific Inc.,Healthcare,NYSE,Scientific instrumentation and laboratory equipment
+MRK,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Merck & Co. Inc.,Healthcare,NYSE,Pharmaceutical company - vaccines and prescription medicines
+ABT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Abbott Laboratories,Healthcare,NYSE,Medical devices and diagnostics
+DHR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Danaher Corporation,Healthcare,NYSE,Life sciences and diagnostics company
+AMGN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Amgen Inc.,Healthcare,NASDAQ,Biotechnology company - biologics and biosimilars
+CVS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CVS Health Corporation,Healthcare,NYSE,Pharmacy and healthcare services
+BMY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Bristol-Myers Squibb Company,Healthcare,NYSE,Pharmaceutical company - cancer and immunology treatments
+GILD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Gilead Sciences Inc.,Healthcare,NASDAQ,Biopharmaceutical company - HIV and hepatitis treatments
+VRTX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Vertex Pharmaceuticals Incorporated,Healthcare,NASDAQ,Specialty pharmaceuticals - cystic fibrosis treatments
+ISRG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Intuitive Surgical Inc.,Healthcare,NASDAQ,Robotic surgical systems - da Vinci robot
+JPM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,JPMorgan Chase & Co.,Banking,NYSE,Major investment bank and financial services
+BAC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Bank of America Corporation,Banking,NYSE,Consumer and commercial banking services
+WFC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Wells Fargo & Company,Banking,NYSE,Diversified financial services company
+C,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Citigroup Inc.,Banking,NYSE,Global banking and financial services
+GS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Goldman Sachs Group Inc.,Banking,NYSE,Investment banking and securities firm
+MS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Morgan Stanley,Banking,NYSE,Investment banking and wealth management
+USB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,U.S. Bancorp,Banking,NYSE,Commercial and retail banking services
+PNC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PNC Financial Services Group Inc.,Banking,NYSE,Regional banking and financial services
+TFC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Truist Financial Corporation,Banking,NYSE,Commercial and consumer banking
+COF,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Capital One Financial Corporation,Banking,NYSE,Credit cards and consumer banking
+SCHW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Charles Schwab Corporation,Banking,NYSE,Brokerage and banking services
+BLK,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,BlackRock Inc.,Banking,NYSE,Investment management and asset management
+WMT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Walmart Inc.,Retail,NYSE,Large retail corporation - discount department stores
+AMZN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Amazon.com Inc.,Retail,NASDAQ,E-commerce and cloud computing services (AWS)
+HD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Home Depot Inc.,Retail,NYSE,Home improvement retail stores
+COST,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Costco Wholesale Corporation,Retail,NASDAQ,Membership warehouse club
+TGT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Target Corporation,Retail,NYSE,General merchandise retailer
+LOW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Lowe's Companies Inc.,Retail,NYSE,Home improvement and appliance stores
+TJX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The TJX Companies Inc.,Retail,NYSE,Off-price apparel and home fashion retailer
+ROST,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Ross Stores Inc.,Retail,NASDAQ,Off-price department store chain
+DG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Dollar General Corporation,Retail,NYSE,Discount variety store chain
+DLTR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Dollar Tree Inc.,Retail,NASDAQ,Discount variety stores
+EBAY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,eBay Inc.,Retail,NASDAQ,Online marketplace and auction platform
+BKNG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Booking Holdings Inc.,Retail,NASDAQ,Online travel booking services - Booking.com and Priceline
+XOM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Exxon Mobil Corporation,Energy,NYSE,Major integrated oil and gas company
+CVX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Chevron Corporation,Energy,NYSE,Multinational energy corporation
+COP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,ConocoPhillips,Energy,NYSE,Exploration and production company
+SLB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Schlumberger Limited,Energy,NYSE,Oilfield services and equipment
+EOG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,EOG Resources Inc.,Energy,NYSE,Oil and natural gas exploration and production
+MPC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Marathon Petroleum Corporation,Energy,NYSE,Petroleum refining and marketing
+PSX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Phillips 66,Energy,NYSE,Energy manufacturing and logistics company
+VLO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Valero Energy Corporation,Energy,NYSE,Petroleum refining and ethanol production
+OXY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Occidental Petroleum Corporation,Energy,NYSE,Oil and gas exploration and production
+HAL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Halliburton Company,Energy,NYSE,Oilfield services and products
+PG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Procter & Gamble Company,Consumer Goods,NYSE,Consumer packaged goods - personal care and cleaning products
+KO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Coca-Cola Company,Consumer Goods,NYSE,Beverage manufacturer - soft drinks
+PEP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PepsiCo Inc.,Consumer Goods,NASDAQ,Food and beverage company - snacks and soft drinks
+PM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Philip Morris International Inc.,Consumer Goods,NYSE,Tobacco company - international markets
+MO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Altria Group Inc.,Consumer Goods,NYSE,Tobacco products - Marlboro brand
+MDLZ,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Mondelez International Inc.,Consumer Goods,NASDAQ,Snack foods manufacturer - Oreo and Cadbury
+CL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Colgate-Palmolive Company,Consumer Goods,NYSE,Oral care and personal care products
+KMB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Kimberly-Clark Corporation,Consumer Goods,NYSE,Personal care products - Kleenex and Huggies
+GIS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,General Mills Inc.,Consumer Goods,NYSE,Food products - cereals and packaged foods
+K,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Kellogg Company,Consumer Goods,NYSE,Breakfast cereals and snack foods
+GE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,General Electric Company,Industrial,NYSE,Diversified industrial conglomerate - aviation and power
+HON,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Honeywell International Inc.,Industrial,NASDAQ,Diversified technology and manufacturing
+UPS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,United Parcel Service Inc.,Industrial,NYSE,Package delivery and supply chain management
+CAT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Caterpillar Inc.,Industrial,NYSE,Construction and mining equipment manufacturer
+BA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Boeing Company,Industrial,NYSE,Aerospace manufacturer - commercial and defense aircraft
+MMM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,3M Company,Industrial,NYSE,Diversified technology company - industrial and consumer products
+LMT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Lockheed Martin Corporation,Industrial,NYSE,Aerospace and defense contractor
+RTX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,RTX Corporation,Industrial,NYSE,Aerospace and defense systems
+DE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Deere & Company,Industrial,NYSE,Agricultural and construction equipment manufacturer
+EMR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Emerson Electric Co.,Industrial,NYSE,Manufacturing and technology company
+V,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Visa Inc.,Financial Services,NYSE,Payment processing and credit card services
+MA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Mastercard Incorporated,Financial Services,NYSE,Payment processing network
+AXP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,American Express Company,Financial Services,NYSE,Credit card and payment services
+PYPL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PayPal Holdings Inc.,Financial Services,NASDAQ,Digital payments platform
+SPGI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,S&P Global Inc.,Financial Services,NYSE,Financial information and analytics
+CME,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CME Group Inc.,Financial Services,NASDAQ,Derivatives marketplace
+ICE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Intercontinental Exchange Inc.,Financial Services,NYSE,Financial and commodity exchanges operator
+FIS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Fidelity National Information Services Inc.,Financial Services,NYSE,Financial services technology
+FI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Fiserv Inc.,Financial Services,NYSE,Fidelity National Information Services
+ADP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Automatic Data Processing Inc.,Financial Services,NASDAQ,Payroll and human resources services
+T,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AT&T Inc.,Telecommunications,NYSE,Telecommunications and media services
+VZ,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Verizon Communications Inc.,Telecommunications,NYSE,Wireless telecommunications carrier
+TMUS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,T-Mobile US Inc.,Telecommunications,NASDAQ,Wireless network operator
+CMCSA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Comcast Corporation,Telecommunications,NASDAQ,Cable television and internet services provider
+CHTR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Charter Communications Inc.,Telecommunications,NASDAQ,Cable and broadband services - Spectrum brand
+DIS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Walt Disney Company,Telecommunications,NYSE,Entertainment and media conglomerate
+SATS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,EchoStar Corporation,Telecommunications,NASDAQ,Satellite communications and connectivity services
+VIV,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Telefônica Brasil S.A.,Telecommunications,NYSE,Brazilian telecommunications services
+TEF,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Telefónica S.A.,Telecommunications,NYSE,Spanish multinational telecommunications company
+NEE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,NextEra Energy Inc.,Utilities,NYSE,Electric power and renewable energy company
+DUK,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Duke Energy Corporation,Utilities,NYSE,Electric power holding company
+SO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Southern Company,Utilities,NYSE,Electric utility holding company
+D,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Dominion Energy Inc.,Utilities,NYSE,Power and energy infrastructure
+AEP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,American Electric Power Company Inc.,Utilities,NASDAQ,Electric utility company
+EXC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Exelon Corporation,Utilities,NASDAQ,Energy generation and distribution
+XEL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Xcel Energy Inc.,Utilities,NASDAQ,Electricity and natural gas utility
+SRE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Sempra Energy,Utilities,NYSE,Energy services holding company
+PEG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Public Service Enterprise Group Incorporated,Utilities,NYSE,Energy company serving New Jersey
+ED,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Consolidated Edison Inc.,Utilities,NYSE,Energy delivery company - New York area
+NKE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Nike Inc.,Apparel,NYSE,Athletic footwear and apparel manufacturer
+LULU,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Lululemon Athletica Inc.,Apparel,NASDAQ,Athletic apparel and yoga wear
+ADDYY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,adidas AG,Apparel,OTC,German sporting goods manufacturer
+VFC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,VF Corporation,Apparel,NYSE,Apparel and footwear company - Vans and North Face
+FOSL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Fossil Group Inc.,Apparel,NASDAQ,Fashion accessories - watches and jewelry
+UAA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Under Armour Inc.,Apparel,NYSE,Sports clothing and accessories
+PVH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PVH Corp.,Apparel,NYSE,Apparel company - Calvin Klein and Tommy Hilfiger
+RL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Ralph Lauren Corporation,Apparel,NYSE,Luxury fashion and lifestyle brand
+CPRI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Capri Holdings Limited,Apparel,NYSE,Luxury fashion - Michael Kors and Versace
+TPR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Tapestry Inc.,Apparel,NYSE,Luxury accessories - Coach and Kate Spade
+MCD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,McDonald's Corporation,Food & Beverage,NYSE,Fast food restaurant chain
+SBUX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Starbucks Corporation,Food & Beverage,NASDAQ,Coffeehouse chain
+YUM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Yum\! Brands Inc.,Food & Beverage,NYSE,Fast food franchises - KFC and Taco Bell
+CMG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Chipotle Mexican Grill Inc.,Food & Beverage,NYSE,Fast-casual restaurant chain
+QSR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Restaurant Brands International Inc.,Food & Beverage,NYSE,Fast food holding company - Burger King and Tim Hortons
+DPZ,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Domino's Pizza Inc.,Food & Beverage,NYSE,Pizza restaurant chain
+WEN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Wendy's Company,Food & Beverage,NASDAQ,Fast food hamburger restaurant chain
+DRI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Darden Restaurants Inc.,Food & Beverage,NYSE,Full-service restaurant company - Olive Garden
+TXRH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Texas Roadhouse Inc.,Food & Beverage,NASDAQ,Casual dining restaurant chain
+MAR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Marriott International Inc.,Hospitality,NASDAQ,Hotel and lodging company
+HLT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Hilton Worldwide Holdings Inc.,Hospitality,NYSE,Global hospitality company
+H,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Hyatt Hotels Corporation,Hospitality,NYSE,Hotel operator and franchisor
+IHG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,InterContinental Hotels Group PLC,Hospitality,NYSE,International hotel company
+WH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Wyndham Hotels & Resorts Inc.,Hospitality,NYSE,Hotel franchisor
+RCL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Royal Caribbean Cruises Ltd.,Hospitality,NYSE,Cruise line operator
+CCL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Carnival Corporation & plc,Hospitality,NYSE,Cruise line operator
+NCLH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Norwegian Cruise Line Holdings Ltd.,Hospitality,NYSE,Cruise line company
+MGM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MGM Resorts International,Hospitality,NYSE,Casino and resort operator
+LVS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Las Vegas Sands Corp.,Hospitality,NYSE,Casino and resort developer
+F,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Ford Motor Company,Automotive,NYSE,American automobile manufacturer
+GM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,General Motors Company,Automotive,NYSE,Automobile manufacturing company
+TM,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Toyota Motor Corporation,Automotive,NYSE,Japanese multinational automotive manufacturer
+HMC,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Honda Motor Co. Ltd.,Automotive,NYSE,Japanese automotive and motorcycle manufacturer
+STLA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Stellantis N.V.,Automotive,NYSE,Multinational automotive corporation - Jeep and Chrysler
+RACE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Ferrari N.V.,Automotive,NYSE,Luxury sports car manufacturer
+RIVN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Rivian Automotive Inc.,Automotive,NASDAQ,Electric vehicle manufacturer - trucks and SUVs
+LCID,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Lucid Group Inc.,Automotive,NASDAQ,Luxury electric vehicle manufacturer
+NIO,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,NIO Inc.,Automotive,NYSE,Chinese electric vehicle manufacturer
+BIIB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Biogen Inc.,Pharmaceuticals,NASDAQ,Biotechnology company - neurological diseases
+REGN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Regeneron Pharmaceuticals Inc.,Pharmaceuticals,NASDAQ,Biotechnology company - monoclonal antibodies
+AAL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,American Airlines Group Inc.,Airlines,NASDAQ,Major US airline carrier
+DAL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Delta Air Lines Inc.,Airlines,NYSE,Major US airline carrier
+UAL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,United Airlines Holdings Inc.,Airlines,NASDAQ,Major US airline carrier
+LUV,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Southwest Airlines Co.,Airlines,NYSE,Low-cost airline carrier
+ALK,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Alaska Air Group Inc.,Airlines,NYSE,Regional airline company
+JBLU,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,JetBlue Airways Corporation,Airlines,NASDAQ,Low-cost airline carrier
+SKYW,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SkyWest Inc.,Airlines,NASDAQ,Regional airline operator
+RYAAY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Ryanair Holdings plc,Airlines,NASDAQ,European low-cost airline
+SHOP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Shopify Inc.,E-commerce,NYSE,E-commerce platform for online stores
+MELI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MercadoLibre Inc.,E-commerce,NASDAQ,Latin American e-commerce and fintech platform
+BABA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Alibaba Group Holding Limited,E-commerce,NYSE,Chinese multinational e-commerce company
+JD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,JD.com Inc.,E-commerce,NASDAQ,Chinese e-commerce company
+PDD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,PDD Holdings Inc.,E-commerce,NASDAQ,Chinese e-commerce platform
+ETSY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Etsy Inc.,E-commerce,NASDAQ,Online marketplace for handmade and vintage items
+W,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Wayfair Inc.,E-commerce,NYSE,Online home goods retailer
+CHWY,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Chewy Inc.,E-commerce,NYSE,Online pet supplies retailer
+BRK B,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Berkshire Hathaway Inc.,Insurance,NYSE,Diversified holding company led by Warren Buffett
+PGR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Progressive Corporation,Insurance,NYSE,Auto insurance company
+ALL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Allstate Corporation,Insurance,NYSE,Personal lines insurance company
+TRV,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Travelers Companies Inc.,Insurance,NYSE,Insurance and financial services company
+MET,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,MetLife Inc.,Insurance,NYSE,Life insurance and employee benefits company
+PRU,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Prudential Financial Inc.,Insurance,NYSE,Financial services and insurance company
+AIG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,American International Group Inc.,Insurance,NYSE,Multinational insurance corporation
+AFL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Aflac Incorporated,Insurance,NYSE,Supplemental insurance provider
+HIG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,The Hartford Financial Services Group Inc.,Insurance,NYSE,Property and casualty insurance
+CB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Chubb Limited,Insurance,NYSE,Property and casualty insurance company
+ENPH,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Enphase Energy Inc.,Renewable Energy,NASDAQ,Solar microinverter systems manufacturer
+SEDG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,SolarEdge Technologies Inc.,Renewable Energy,NASDAQ,Solar power optimization and monitoring
+RUN,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Sunrun Inc.,Renewable Energy,NASDAQ,Residential solar energy company
+FSLR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,First Solar Inc.,Renewable Energy,NASDAQ,Solar panel manufacturer
+PLUG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Plug Power Inc.,Renewable Energy,NASDAQ,Hydrogen fuel cell systems
+BE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Bloom Energy Corporation,Renewable Energy,NYSE,Solid oxide fuel cell power generation
+ORA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Ormat Technologies Inc.,Renewable Energy,NYSE,Geothermal and recovered energy power
+AMT,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,American Tower Corporation,Real Estate,NYSE,Wireless and broadcast communication infrastructure REIT
+PLD,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Prologis Inc.,Real Estate,NYSE,Industrial real estate investment trust
+CCI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Crown Castle Inc.,Real Estate,NYSE,Telecommunications infrastructure REIT
+EQIX,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Equinix Inc.,Real Estate,NASDAQ,Data center real estate investment trust
+PSA,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Public Storage,Real Estate,NYSE,Self-storage real estate investment trust
+WELL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Welltower Inc.,Real Estate,NYSE,Healthcare real estate investment trust
+DLR,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Digital Realty Trust Inc.,Real Estate,NYSE,Data center real estate investment trust
+O,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Realty Income Corporation,Real Estate,NYSE,Commercial real estate investment trust
+SPG,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Simon Property Group Inc.,Real Estate,NYSE,Shopping mall real estate investment trust
+AVB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AvalonBay Communities Inc.,Real Estate,NYSE,Residential real estate investment trust

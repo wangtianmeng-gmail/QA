@@ -57,16 +57,16 @@ class IBDataDownloader(EWrapper, EClient):
 
         return logger
 
-    def error(self, reqId: int, errorTime: int, errorCode: int, errorString: str, advancedOrderRejectJson: str = ""):
+    def error(self, reqId: int, errorCode: int, errorString: str, *_args, **_kwargs):
         """
         Handle error messages from IB API.
 
         Args:
             reqId: Request identifier
-            errorTime: Error timestamp
             errorCode: Error code from IB
             errorString: Error message description
-            advancedOrderRejectJson: Additional error details
+            *_args: Additional positional arguments from IB API (unused)
+            **_kwargs: Additional keyword arguments from IB API (unused)
         """
         self.logger.error(f"ReqId: {reqId}, ErrorCode: {errorCode}, ErrorString: {errorString}")
 
@@ -354,8 +354,17 @@ class StockDataManager:
             exchange = row.get('exchange', 'SMART')
 
             # Convert total_days to duration format for IB API
-            total_days = int(row.get('total_days', 1))
-            duration = f"{total_days} D"
+            # IB API requires integer days or use seconds for fractional days
+            total_days = float(row.get('total_days', 1))
+            if total_days >= 1 and total_days == int(total_days):
+                # Use days format for whole days
+                duration = f"{int(total_days)} D"
+            else:
+                # Use seconds format for fractional days
+                # Assuming RTH: 6.5 hours per day = 23400 seconds per day
+                seconds_per_day = 6.5 * 3600  # 23400 seconds
+                total_seconds = int(total_days * seconds_per_day)
+                duration = f"{total_seconds} S"
 
             bar_size = row.get('bar_size', '1 min')
             what_to_show = row.get('what_to_show', 'TRADES')
