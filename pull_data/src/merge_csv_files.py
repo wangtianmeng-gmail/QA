@@ -382,6 +382,8 @@ def main():
 
     # Process each symbol
     merged_files = {}
+    single_file_stocks = {}
+    not_found_stocks = []
 
     for symbol in symbols:
         logging.info("="*60)
@@ -393,10 +395,12 @@ def main():
 
         if not csv_files:
             logging.warning(f"No CSV files found for {symbol}, skipping")
+            not_found_stocks.append(symbol)
             continue
 
         if len(csv_files) == 1:
             logging.info(f"Only one file for {symbol}, no merge needed")
+            single_file_stocks[symbol] = csv_files[0].name
             continue
 
         # Merge the files
@@ -430,11 +434,33 @@ def main():
     for symbol, filepath in merged_files.items():
         logging.info(f"  {symbol}: {filepath.name}")
 
+    if single_file_stocks:
+        logging.info(f"\nSingle file stocks ({len(single_file_stocks)} symbols - no merge needed):")
+        for symbol, filename in single_file_stocks.items():
+            logging.info(f"  {symbol}: {filename}")
+
+    if not_found_stocks:
+        logging.info(f"\nStocks with no data found ({len(not_found_stocks)} symbols):")
+        for symbol in not_found_stocks:
+            logging.info(f"  {symbol}")
+
     print("\n" + "="*60)
     print("CSV Merge Summary:")
     print("="*60)
+    print(f"\nMerged files ({len(merged_files)} symbols):")
     for symbol, filepath in merged_files.items():
-        print(f"{symbol:10s} -> {filepath.name}")
+        print(f"  {symbol:10s} -> {filepath.name}")
+
+    if single_file_stocks:
+        print(f"\nSingle file stocks ({len(single_file_stocks)} symbols - no merge needed):")
+        for symbol, filename in single_file_stocks.items():
+            print(f"  {symbol:10s} -> {filename}")
+
+    if not_found_stocks:
+        print(f"\nStocks with no data found ({len(not_found_stocks)} symbols):")
+        for symbol in not_found_stocks:
+            print(f"  {symbol}")
+
     print("="*60)
 
 

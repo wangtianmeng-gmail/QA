@@ -6,7 +6,7 @@ Developer reference for the Stock Data Downloader project.
 
 - [Development Environment](#development-environment)
 - [Project Architecture](#project-architecture)
-- [Code Structure (v3)](#code-structure-v3)
+- [Code Structure](#code-structure)
 - [IB API Reference](#ib-api-reference)
 - [Configuration Constants](#configuration-constants)
 - [Logging Configuration](#logging-configuration)
@@ -14,6 +14,7 @@ Developer reference for the Stock Data Downloader project.
 - [Common Development Issues](#common-development-issues)
 - [Code Style](#code-style)
 - [Key Algorithms](#key-algorithms)
+- [Version Control Strategy](#version-control-strategy)
 - [Refactoring History](#refactoring-history)
 - [Git Workflow](#git-workflow)
 - [References](#references)
@@ -40,10 +41,20 @@ conda activate test_dl
 
 ```
 pull_data/
-├── config/          # Configuration files (CSV)
-├── src/             # Source code
-├── data/            # Output data files (gitignored)
-└── reference/       # Reference IB API scripts
+├── config/              # Configuration files (CSV)
+│   ├── stocks_config.csv          # Main config file
+│   └── stocks_config_full.csv     # Full config example
+├── src/                 # Source code
+│   ├── stock_data_downloader.py   # Current production version (v3)
+│   ├── merge_csv_files.py         # Utility to merge CSV files
+│   └── archive/                   # Legacy versions
+│       ├── stock_data_downloader_v1.py
+│       └── stock_data_downloader_v2.py
+├── data/                # Output data files (gitignored)
+├── reference/           # Reference IB API scripts
+├── README.md            # User documentation
+├── DEVELOPMENT.md       # This file (developer guide)
+└── CLAUDE.md            # Claude AI assistant notes
 ```
 
 ### Design Principles
@@ -51,15 +62,17 @@ pull_data/
 1. **Path Auto-Detection**: Script uses `Path(__file__).parent.parent` to find project root
 2. **Separation of Concerns**: Configuration separate from code
 3. **Extensibility**: Add securities via CSV without code changes
-4. **Type Safety**: Dataclasses for configuration and results (v3)
-5. **Testability**: Focused classes with clear responsibilities (v3)
+4. **Type Safety**: Dataclasses for configuration and results
+5. **Testability**: Focused classes with clear responsibilities
 
-## Code Structure (v3)
+## Code Structure
 
 ### Architecture Overview
 
+The current production version (`stock_data_downloader.py`) features a refactored, modular architecture:
+
 ```
-stock_data_downloader_v3.py (~970 lines)
+stock_data_downloader.py (~1290 lines)
 │
 ├── Dataclasses (Type Safety)
 │   ├── StockConfig         - Configuration for stock downloads
@@ -70,7 +83,7 @@ stock_data_downloader_v3.py (~970 lines)
 │
 ├── Helper Classes
 │   ├── RequestIDGenerator  - Generate unique request IDs
-│   ├── ProgressTracker     - Track progress and timing
+│   ├── ProgressTracker     - Track progress and timing (incremental CSV saves)
 │   ├── FileManager         - Handle CSV operations
 │   └── ChunkDownloader     - Download chunks with retry logic
 │
@@ -97,7 +110,7 @@ class IBDataDownloader(EWrapper, EClient):
         EWrapper.__init__(self)
         EClient.__init__(self, wrapper=self)
         self.data = {}
-        self.data_download_complete = {}
+        self.download_events = {}  # Threading events for efficient waiting
 ```
 
 ### Class: StockDataManager
@@ -105,7 +118,7 @@ class IBDataDownloader(EWrapper, EClient):
 Main orchestrator that manages the download workflow with market hours awareness.
 
 **Key Methods:**
-- `load_config()` - Load CSV configuration
+- `load_config()` - Load CSV configuration and parse into StockConfig dataclasses
 - `connect_to_ib()` - Establish connection to TWS/Gateway
 - `download_stocks()` - Main workflow for all stocks
 - `_download_single_stock()` - Download data for a single stock
@@ -120,29 +133,36 @@ Main orchestrator that manages the download workflow with market hours awareness
 
 ### Class: RequestIDGenerator
 
-Generates unique request IDs for IB API calls to avoid collisions.
+Generates unique request IDs for IB API calls to avoid collisions using auto-incrementing counter.
 
-**Formula:**
+**Implementation:**
 ```python
-req_id = (base_req_id * 100000) + (chunk_num * 10) + retry_attempt
-where base_req_id = (stock_num - 1) * REQUEST_ID_MULTIPLIER
+class RequestIDGenerator:
+    def __init__(self):
+        self._counter = 0
+
+    def generate_id(self, stock_num: int, chunk_num: int, retry_attempt: int) -> int:
+        self._counter += 1
+        return self._counter
 ```
 
-**Example:**
-- Stock 1, Chunk 1, Retry 0: `(0 * 100000) + (1 * 10) + 0 = 10`
-- Stock 2, Chunk 5, Retry 1: `(10000 * 100000) + (5 * 10) + 1 = 1000000051`
+**Benefits:**
+- Guaranteed unique IDs
+- No complex formulas needed
+- Thread-safe with proper locking (if needed)
+- Simple and reliable
 
 ### Class: ProgressTracker
 
-Tracks download progress and writes timing information to CSV.
+Tracks download progress and writes timing information to CSV **incrementally** (saves after each chunk).
 
 **Key Methods:**
 - `_initialize_timing_csv()` - Create timing CSV with headers
-- `record_chunk()` - Append timing record to CSV
+- `record_chunk()` - Append timing record to CSV immediately
 
 **Timing CSV Format:**
 ```
-symbol,chunk_number,retry_attempt,chunk_start_time,chunk_end_time,
+symbol,chunk_number,retry_attempt,req_id,chunk_start_time,chunk_end_time,
 download_duration_seconds,bars_downloaded,trading_hours_downloaded,
 data_start,data_end,requested_hours,use_rth
 ```
@@ -153,7 +173,7 @@ Handles all CSV file operations for stock data.
 
 **Key Methods:**
 - `save_stock_data()` - Save stock data to CSV
-- `_generate_filename()` - Generate filename with timestamps
+- `_generate_filename()` - Generate filename with timestamps from actual data
 
 **Filename Format:**
 ```
@@ -168,7 +188,7 @@ Handles chunk download operations with retry logic and error handling.
 - `download_chunk_with_retry()` - Download chunk with automatic retries
 - `_download_single_chunk()` - Single chunk download attempt
 - `_request_historical_data()` - Request data from IB
-- `_wait_for_download()` - Wait for download completion
+- `_wait_for_download()` - Wait for download completion using threading.Event
 - `_create_success_result()` - Create successful result
 - `_create_error_result()` - Create error result (TIMEOUT, FAILED, NO_DATA)
 
@@ -237,7 +257,18 @@ connection_thread = threading.Thread(
 connection_thread.start()
 ```
 
-This allows the main thread to send requests while the API thread handles callbacks.
+The download waiting mechanism uses `threading.Event` for efficient blocking:
+
+```python
+# Create event for this request
+self.download_events[req_id] = threading.Event()
+
+# Wait efficiently - blocks until set() or timeout
+if event.wait(timeout=30):
+    # Download completed successfully
+```
+
+This allows the main thread to send requests while the API thread handles callbacks efficiently.
 
 ## IB API Reference
 
@@ -265,7 +296,7 @@ reqHistoricalData(
     whatToShow,         # Data type (e.g., "TRADES", "MIDPOINT")
     useRTH,             # 1=regular hours, 0=extended hours
     formatDate,         # 1=yyyyMMdd HH:mm:ss, 2=epoch
-    keepUpToDate,       # 0=historical only, 1=streaming
+    keepUpToDate,       # False=historical only, True=streaming
     chartOptions        # Additional options (usually [])
 )
 ```
@@ -300,7 +331,7 @@ Valid bar sizes:
 
 ## Configuration Constants
 
-Located at the top of `stock_data_downloader_v3.py`:
+Located at the top of `stock_data_downloader.py`:
 
 ```python
 TRADING_HOURS_RTH = 6.5        # Regular Trading Hours (9:30-16:00 ET)
@@ -325,7 +356,7 @@ The script uses Python's `logging` module with separate loggers:
 setup_logging(
     log_file,
     ib_downloader_level=logging.INFO,    # IBDataDownloader logs
-    stock_manager_level=logging.INFO,    # StockDataManager logs
+    stock_manager_level=logging.INFO,    # StockDataManager & ChunkDownloader logs
     ibapi_level=logging.WARNING          # IB API library logs
 )
 ```
@@ -372,17 +403,17 @@ Available levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
    AAPL,STK,USD,SMART,1,1 min,TRADES,,0  # Extended hours
    ```
 
-### Unit Testing (v3 Benefits)
+### Unit Testing Benefits
 
-Version 3's architecture enables easy unit testing:
+The current architecture enables easy unit testing:
 
 ```python
 # Unit test RequestIDGenerator
 def test_request_id_no_collision():
     gen = RequestIDGenerator()
-    id1 = gen.generate_id(stock_num=1, chunk_num=1, retry_attempt=1)
+    id1 = gen.generate_id(stock_num=1, chunk_num=1, retry_attempt=0)
     id2 = gen.generate_id(stock_num=11, chunk_num=1, retry_attempt=0)
-    assert id1 != id2
+    assert id1 != id2  # Guaranteed unique
 
 # Mock ChunkDownloader for testing StockDataManager
 def test_download_single_stock():
@@ -440,20 +471,21 @@ self.logger.info(f"Connection status: {self.ib_client.isConnected()}")
 self.logger.info(f"Received {len(chunk_data)} bars")
 ```
 
-### Issue: Request ID Collisions (Fixed in v3)
+### Issue: Request ID Collisions (Fixed)
 
 **v2 Bug:**
-```python
-# Stock 1, chunk 1, retry 1: 0 + 1 + 100000 = 100001
-# Stock 11, chunk 1, attempt 1: 100000 + 1 = 100001  ❌ COLLISION!
-```
+Formula-based approach could cause collisions between stocks during retry attempts.
 
-**v3 Fix:**
+**Current Fix:**
+Auto-incrementing counter guarantees unique IDs:
 ```python
-def generate_id(stock_num, chunk_num, retry_attempt):
-    base = (stock_num - 1) * 10000
-    return (base * 100000) + (chunk_num * 10) + retry_attempt
-# No more collisions!
+class RequestIDGenerator:
+    def __init__(self):
+        self._counter = 0
+
+    def generate_id(self, stock_num, chunk_num, retry_attempt):
+        self._counter += 1
+        return self._counter  # Always unique!
 ```
 
 ## Code Style
@@ -476,17 +508,22 @@ def save_data_to_csv(
 Use Google-style docstrings:
 
 ```python
-def download_chunk_with_retry(self, chunk_spec: ChunkSpec,
-                               max_retries: int = MAX_CHUNK_RETRIES) -> Optional[ChunkResult]:
+def download_chunk_with_retry(
+    self,
+    chunk_spec: ChunkSpec,
+    stock_num: int,
+    max_retries: int = MAX_CHUNK_RETRIES
+) -> Optional[ChunkResult]:
     """
-    Download a chunk with retry logic
+    Download a chunk with retry logic (max 3 retries by default).
 
     Args:
-        chunk_spec: Chunk specification
-        max_retries: Maximum retry attempts
+        chunk_spec: Chunk specification (contains req_id for first attempt)
+        stock_num: Stock number for request ID generation (used for retry attempts)
+        max_retries: Maximum retry attempts (default: MAX_CHUNK_RETRIES)
 
     Returns:
-        ChunkResult or None if all retries failed
+        ChunkResult with download data and timing info, or None if all retries failed
     """
 ```
 
@@ -529,8 +566,8 @@ The iterative approach automatically handles market holidays and weekends:
 ### Bar Size Parsing
 
 ```python
-def _parse_bar_size_to_seconds(self, bar_size: str) -> int:
-    """Parse bar size string to seconds"""
+def parse_bar_size_to_seconds(bar_size: str) -> int:
+    """Parse bar size string to seconds per bar"""
     bar_size_lower = bar_size.lower().strip()
     match = re.match(r'(\d+)\s*(\w+)', bar_size_lower)
 
@@ -555,7 +592,7 @@ def _parse_bar_size_to_seconds(self, bar_size: str) -> int:
 ```python
 seconds_per_bar = parse_bar_size_to_seconds(bar_size)
 bars_count = len(chunk_data)
-trading_hours = (bars_count * seconds_per_bar) / 3600.0
+trading_hours = round((bars_count * seconds_per_bar) / 3600.0, 6)
 ```
 
 ## Rate Limiting
@@ -574,12 +611,54 @@ trading_hours = (bars_count * seconds_per_bar) / 3600.0
 time.sleep(WAIT_TIME_BETWEEN_REQUESTS)  # Default: 2 seconds
 ```
 
+## Version Control Strategy
+
+### Current Approach
+
+We use **Git branching/tagging** instead of versioned filenames:
+
+- **Production file**: `src/stock_data_downloader.py` (current v3 codebase)
+- **Legacy versions**: `src/archive/stock_data_downloader_v{1,2}.py`
+- **Git tags**: Use tags to mark major versions (`v1.0.0`, `v2.0.0`, `v3.0.0`)
+
+### Benefits
+
+1. **Clean codebase**: One production file instead of multiple versioned files
+2. **Git history**: Full version history available via `git log` and tags
+3. **Easy rollback**: Use `git checkout v2.0.0` if needed
+4. **Standard practice**: Industry-standard version control approach
+
+### Tagging Versions
+
+```bash
+# Tag current version (v3)
+git tag v3.0.0 -m "Version 3.0.0 - Refactored architecture with dataclasses"
+
+# View all tags
+git tag -l
+
+# Checkout specific version
+git checkout v2.0.0
+
+# Return to latest
+git checkout main
+```
+
 ## Refactoring History
 
-### v2 to v3 Refactoring
+### v1 → v2 (Advanced Iterative Download)
+
+**Key Changes:**
+- Single-request download → Iterative chunking
+- Added automatic holiday/weekend handling
+- Market hours awareness (RTH vs extended)
+- Retry mechanism for failed chunks
+- Timing data tracking
+
+### v2 → v3 (Architectural Refactoring)
 
 **Overview:**
-The code has been refactored from **v2 (1010 lines, monolithic)** to **v3 (organized, modular architecture)**.
+Refactored from **v2 (1010 lines, monolithic)** to **v3 (1290 lines, modular architecture)**.
 
 ### Key Improvements
 
@@ -592,7 +671,7 @@ The code has been refactored from **v2 (1010 lines, monolithic)** to **v3 (organ
 - Timing tracking scattered everywhere
 
 **After (v3):**
-- 7 focused classes, each < 200 lines
+- 7 focused classes, each < 300 lines
 - Clear responsibilities
 - Easy to test and maintain
 
@@ -601,7 +680,7 @@ The code has been refactored from **v2 (1010 lines, monolithic)** to **v3 (organ
 **Benefits:**
 - Type hints for IDE autocomplete
 - Automatic `__init__`, `__repr__`, `__eq__`
-- Immutable data structures
+- Immutable data structures with `frozen=False` (mutable where needed)
 - Self-documenting code
 
 #### 3. Better Error Handling
@@ -621,20 +700,36 @@ if self.ib_client is None:
 
 **After (v3):** 1 line
 ```python
-retry_spec = replace(chunk_spec, retry_attempt=retry_attempt)
+retry_spec = replace(chunk_spec, req_id=new_req_id, retry_attempt=retry_attempt)
 ```
 
 #### 5. Request ID Bug Fix
 
 **v2 (Broken):**
-```python
-# Could have collisions between different stocks
-```
+Formula-based approach could have collisions between different stocks.
 
 **v3 (Fixed):**
 ```python
-req_id = (base_req_id * 100000) + (chunk_num * 10) + retry_attempt
-# Guaranteed unique IDs
+# Auto-incrementing counter - guaranteed unique IDs
+self._counter += 1
+return self._counter
+```
+
+#### 6. Efficient Waiting with threading.Event
+
+**v2:** Polling loop with sleep(0.1)
+```python
+while time.time() - start_time < timeout:
+    if self.app.data_download_complete.get(req_id, False):
+        return True
+    time.sleep(0.1)  # Wastes CPU cycles
+```
+
+**v3:** Efficient blocking with threading.Event
+```python
+# Blocks efficiently until set() or timeout
+if event.wait(timeout=timeout):
+    return True  # Download completed
 ```
 
 ### Performance
@@ -642,17 +737,19 @@ req_id = (base_req_id * 100000) + (chunk_num * 10) + retry_attempt
 - **Same performance** as v2 (no overhead from refactoring)
 - **Better error handling** (cleaner failure modes)
 - **Same memory usage** (no data duplication)
+- **More efficient waiting** (threading.Event vs polling)
 
 ### Summary
 
 | Metric | v2 | v3 | Improvement |
 |--------|----|----|-------------|
-| **Lines per class** | 750 | < 200 | 73% reduction |
+| **Lines per class** | 750 | < 300 | 60% reduction |
 | **Testability** | Poor | Excellent | ⭐⭐⭐⭐⭐ |
 | **Maintainability** | Difficult | Easy | ⭐⭐⭐⭐⭐ |
 | **Extensibility** | Hard | Easy | ⭐⭐⭐⭐⭐ |
 | **Type Safety** | Partial | Full | ⭐⭐⭐⭐⭐ |
 | **Bug Count** | 1 (ID collision) | 0 | Fixed! |
+| **Version Control** | Filename suffix | Git tags | Standard! |
 
 ### Future Enhancements (Now Easy!)
 
@@ -697,6 +794,23 @@ __pycache__/       # Python cache
 .DS_Store          # macOS files
 ```
 
+### Branching Strategy
+
+- `main` - Production-ready code
+- `feature/*` - New features
+- `bugfix/*` - Bug fixes
+- `refactor/*` - Code refactoring
+
+### Commit Messages
+
+Use conventional commits:
+```
+feat: Add support for futures contracts
+fix: Resolve request ID collision bug
+refactor: Extract ChunkDownloader class
+docs: Update README with new structure
+```
+
 ## References
 
 ### Interactive Brokers Documentation
@@ -710,4 +824,4 @@ __pycache__/       # Python cache
 - `pathlib` - Modern path handling (cross-platform)
 - `logging` - Structured logging
 - `pytz` - Timezone handling (US/Eastern)
-- `dataclasses` - Type-safe data structures (v3)
+- `dataclasses` - Type-safe data structures

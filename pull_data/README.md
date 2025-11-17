@@ -9,7 +9,9 @@ A Python application for downloading high-frequency historical stock data from I
 - **Market Hours Aware**: Supports both regular trading hours (RTH) and extended hours
 - **Configurable**: Easy stock/index management via CSV configuration
 - **Extensible**: Support for stocks, ETFs, and indices (SPX, VIX, etc.)
-- **Robust**: Error handling, comprehensive logging, and thread-safe API connection
+- **Robust**: Retry logic, comprehensive logging, and thread-safe API connection
+- **Type-Safe**: Dataclass-based architecture for better code quality
+- **Modular Design**: Clean separation of concerns for easy maintenance
 
 ## Quick Start
 
@@ -29,7 +31,7 @@ A Python application for downloading high-frequency historical stock data from I
 
 2. **Install dependencies:**
    ```bash
-   pip install -r requirements.txt
+   pip install pandas pytz ibapi
    ```
 
 3. **Ensure IB TWS/Gateway is running:**
@@ -38,14 +40,15 @@ A Python application for downloading high-frequency historical stock data from I
 
 ### Usage
 
-**Run the downloader (v3 - Recommended):**
+**Run the downloader:**
 ```bash
-python3.12 src/stock_data_downloader_v3.py
+cd pull_data/src
+python3.12 stock_data_downloader.py
 ```
 
 **With custom paths:**
 ```bash
-python3.12 src/stock_data_downloader_v3.py config/custom_config.csv data/custom_output
+python3.12 stock_data_downloader.py ../config/custom_config.csv ../data/custom_output
 ```
 
 ### Output
@@ -56,7 +59,8 @@ Data files are saved to `data/` directory with detailed timing information:
 data/
 ├── AAPL_saved_20250127_143000_start_20250126_093000_end_20250127_160000.csv
 ├── TSLA_saved_20250127_143500_start_20250126_093000_end_20250127_160000.csv
-└── stock_download_v3_20250127_143000.csv  # Timing data for all downloads
+├── stock_download_v3_20250127_143000.csv    # Timing data for all downloads
+└── stock_download_v3_20250127_143000.log    # Log file
 ```
 
 ## Configuration
@@ -122,7 +126,7 @@ AAPL,STK,USD,SMART,1,1 min,TRADES,,0
 
 ## How It Works
 
-The downloader uses an **iterative chunk-based approach** with improved architecture (v3):
+The downloader uses an **iterative chunk-based approach** with modern architecture:
 
 1. **Request chunk** (e.g., 3 hours of data ending at specified time)
 2. **Analyze actual data received** (e.g., got 2.5 hours of trading data)
@@ -135,15 +139,26 @@ This automatically handles:
 - Early market closes
 - Extended hours vs regular hours
 
-### Architecture (v3)
+### Architecture
 
-Version 3 features a refactored, modular architecture:
+The current version features a refactored, modular architecture:
+
 - **Separation of concerns**: Focused classes with clear responsibilities
 - **Type safety**: Dataclasses for configuration and results
-- **Better error handling**: Comprehensive logging and retry logic
+- **Better error handling**: Comprehensive logging and retry logic (max 3 retries per chunk)
 - **Testability**: Isolated components for easier unit testing
+- **Efficient waiting**: Uses `threading.Event` for low-CPU blocking
+- **Request ID uniqueness**: Auto-incrementing counter prevents collisions
 
-See `DEVELOPER.md` for detailed architecture information.
+**Core Components:**
+- `IBDataDownloader` - IB API client wrapper
+- `StockDataManager` - Main orchestrator
+- `ChunkDownloader` - Chunk download with retry logic
+- `ProgressTracker` - Incremental timing data saves
+- `FileManager` - CSV file operations
+- `RequestIDGenerator` - Unique ID generation
+
+See `DEVELOPMENT.md` for detailed architecture information.
 
 ## Output Format
 
@@ -172,6 +187,7 @@ The aggregated timing file (`stock_download_v3_YYYYMMDD_HHMMSS.csv`) contains:
 - Trading hours downloaded
 - Download duration in seconds
 - Requested vs actual hours
+- Retry attempt information
 
 ## Troubleshooting
 
@@ -188,7 +204,7 @@ The aggregated timing file (`stock_download_v3_YYYYMMDD_HHMMSS.csv`) contains:
    - IB Gateway: 4001
 
 **Change port in code if needed:**
-Edit `src/stock_data_downloader_v3.py`:
+Edit `src/stock_data_downloader.py`:
 ```python
 IB_PORT = 4001  # For IB Gateway
 ```
@@ -222,9 +238,10 @@ If downloads timeout frequently:
 2. Reduce chunk size (default: 3 hours)
 3. Check network connection to IB
 
-Edit constants in `src/stock_data_downloader_v3.py`:
+Edit constants in `src/stock_data_downloader.py`:
 ```python
 DOWNLOAD_TIMEOUT_SECONDS = 60  # Increase timeout
+CHUNK_HOURS = 2.0              # Reduce chunk size
 ```
 
 ### Logging
@@ -246,18 +263,21 @@ setup_logging(
 ```
 pull_data/
 ├── README.md                    # This file (user guide)
-├── DEVELOPER.md                 # Developer reference
-├── requirements.txt             # Python dependencies
-├── .gitignore                   # Git ignore rules
+├── DEVELOPMENT.md               # Developer reference
+├── CLAUDE.md                    # Claude AI assistant notes
 │
 ├── config/
-│   └── stocks_config.csv        # Stock configuration
+│   ├── stocks_config.csv        # Main stock configuration
+│   └── stocks_config_full.csv   # Full configuration example
 │
 ├── src/
-│   ├── stock_data_downloader_v3.py  # Main application (v3 - Recommended)
-│   └── stock_data_downloader_v2.py  # Legacy version (v2)
+│   ├── stock_data_downloader.py # Current production version (v3 architecture)
+│   ├── merge_csv_files.py       # Utility to merge CSV files
+│   └── archive/                 # Legacy versions
+│       ├── stock_data_downloader_v1.py
+│       └── stock_data_downloader_v2.py
 │
-├── data/                        # Output directory (auto-created)
+├── data/                        # Output directory (auto-created, gitignored)
 │   ├── *.csv                    # Downloaded data files
 │   └── *.log                    # Log files
 │
@@ -267,16 +287,23 @@ pull_data/
 
 ## Version History
 
-### v3 (Current - Recommended)
+### Current Version (v3 Architecture)
+**File**: `src/stock_data_downloader.py`
+
+**What's New:**
 - Refactored architecture with separation of concerns
-- Dataclasses for type safety
-- Improved error handling and retry logic
+- Dataclasses for type safety and better code organization
+- Improved error handling and retry logic (no more assertions)
 - Better testability with focused classes
-- Request ID collision bug fix
-- Production-ready error handling (no assertions)
+- Request ID collision bug fix (auto-incrementing counter)
+- Efficient waiting with `threading.Event` (reduced CPU usage)
+- Production-ready error handling
 - Same performance and features as v2
 
-### v2
+### v2 (Archived)
+**File**: `src/archive/stock_data_downloader_v2.py`
+
+**Features:**
 - Iterative download with real-time chunk adjustment
 - Automatic handling of market holidays without calendar
 - Market hours awareness (RTH vs extended)
@@ -285,11 +312,16 @@ pull_data/
 - CSV files include start and end timestamps from actual data
 - Aggregated timing data in single CSV
 
-### v1
+### v1 (Archived)
+**File**: `src/archive/stock_data_downloader_v1.py`
+
+**Features:**
 - Basic historical data download
 - Single-request download per stock
 - CSV configuration support
 - Fixed duration and bar size
+
+**Note**: Use Git tags to reference specific versions (`v1.0.0`, `v2.0.0`, `v3.0.0`). See `DEVELOPMENT.md` for version control details.
 
 ## Best Practices
 
@@ -323,6 +355,30 @@ The script includes a 2-second wait between requests. For large configurations:
 1. **Check timing CSV** for successful downloads (look for errors like TIMEOUT, NO_DATA)
 2. **Verify bar counts** match expectations (trading hours × bars per hour)
 3. **Review logs** for warnings or errors
+4. **Check retry attempts** - multiple retries may indicate connectivity issues
+
+## Utilities
+
+### Merge CSV Files
+
+Use `merge_csv_files.py` to combine multiple downloaded CSV files:
+
+```bash
+cd pull_data/src
+python3.12 merge_csv_files.py
+```
+
+This utility merges all CSV files in the data directory, removing duplicates and sorting by date.
+
+## Development
+
+For developers working on the codebase:
+
+- See `DEVELOPMENT.md` for architecture details, testing strategies, and contribution guidelines
+- Code follows modular design with dataclasses for type safety
+- All classes are isolated and testable
+- Use type hints and Google-style docstrings
+- Follow conventional commit messages
 
 ## License
 
@@ -332,4 +388,13 @@ This project is for personal use with Interactive Brokers API.
 
 - [Interactive Brokers API Documentation](https://interactivebrokers.github.io/tws-api/)
 - [Historical Data Limitations](https://interactivebrokers.github.io/tws-api/historical_limitations.html)
-- IB API Python client: `/Users/tianmengwang/Applications/twsapi_macunix/IBJts/source/pythonclient/ibapi`
+- [IB API Python Client](https://interactivebrokers.github.io/tws-api/introduction.html#gsc.tab=0)
+- IB API Local Installation: `/Users/tianmengwang/Applications/twsapi_macunix/IBJts/source/pythonclient/ibapi`
+
+## Support
+
+For issues or questions:
+1. Check logs in `data/` directory
+2. Review `DEVELOPMENT.md` for common issues
+3. Verify IB TWS/Gateway connection and settings
+4. Check IB API rate limits and historical data availability
