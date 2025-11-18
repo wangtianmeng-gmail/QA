@@ -17,7 +17,7 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime
 import logging
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Any
 
 
 def setup_logging(log_file: Path) -> None:
@@ -124,7 +124,7 @@ def load_stock_data(symbol: str, data_dir: Path) -> Optional[pd.DataFrame]:
 
 
 def check_date_consistency(master_df: pd.DataFrame, test_df: pd.DataFrame,
-                          master_symbol: str, test_symbol: str) -> Dict[str, any]:
+                          master_symbol: str, test_symbol: str) -> Dict[str, Any]:
     """
     Check if the Date column of test_df matches the master_df.
 
@@ -185,7 +185,7 @@ def check_date_consistency(master_df: pd.DataFrame, test_df: pd.DataFrame,
     return result
 
 
-def check_zero_values(df: pd.DataFrame, symbol: str) -> Dict[str, any]:
+def check_zero_values(df: pd.DataFrame, symbol: str) -> Dict[str, Any]:
     """
     Check for zero values in Open, High, Low, Close columns.
 
@@ -397,7 +397,7 @@ def generate_integrity_report(date_results: List[Dict],
 
     # Create DataFrame and save
     report_df = pd.DataFrame(report_data)
-    report_file = output_dir / f"integrity_check_report_{timestamp}.csv"
+    report_file = output_dir / f"_report_integrity_check_{timestamp}.csv"
     report_df.to_csv(report_file, index=False)
 
     logging.info(f"Report saved to {report_file}")
@@ -501,7 +501,7 @@ def main():
 
     # Set up logging
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file = data_dir / f"integrity_check_{timestamp}.log"
+    log_file = data_dir / f"_log_integrity_check_{timestamp}.log"
     setup_logging(log_file)
 
     logging.info("="*80)

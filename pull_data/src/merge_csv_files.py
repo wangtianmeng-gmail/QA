@@ -367,7 +367,7 @@ def main():
 
     # Set up logging
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file = data_dir / f"merge_csv_files_{timestamp}.log"
+    log_file = data_dir / f"_log_merge_csv_files_{timestamp}.log"
     setup_logging(log_file)
 
     logging.info("="*60)
@@ -384,6 +384,8 @@ def main():
     merged_files = {}
     single_file_stocks = {}
     not_found_stocks = []
+    failed_merge_stocks = {}  # Track stocks that failed merge due to overlap validation
+    empty_merge_stocks = []  # Track stocks that merged successfully but resulted in empty data
 
     for symbol in symbols:
         logging.info("="*60)
@@ -409,10 +411,12 @@ def main():
         except ValueError as e:
             logging.error(f"Failed to merge files for {symbol}: {e}")
             logging.error(f"Skipping {symbol} and continuing with next symbol")
+            failed_merge_stocks[symbol] = str(e)
             continue
 
         if merged_df is None or len(merged_df) == 0:
             logging.warning(f"No data after merge for {symbol}, skipping")
+            empty_merge_stocks.append(symbol)
             continue
 
         # Generate filename and save
@@ -444,6 +448,16 @@ def main():
         for symbol in not_found_stocks:
             logging.info(f"  {symbol}")
 
+    if failed_merge_stocks:
+        logging.info(f"\nStocks with failed merges due to overlap validation ({len(failed_merge_stocks)} symbols):")
+        for symbol, error in failed_merge_stocks.items():
+            logging.info(f"  {symbol}: {error}")
+
+    if empty_merge_stocks:
+        logging.info(f"\nStocks with empty data after merge ({len(empty_merge_stocks)} symbols):")
+        for symbol in empty_merge_stocks:
+            logging.info(f"  {symbol}")
+
     print("\n" + "="*60)
     print("CSV Merge Summary:")
     print("="*60)
@@ -459,6 +473,16 @@ def main():
     if not_found_stocks:
         print(f"\nStocks with no data found ({len(not_found_stocks)} symbols):")
         for symbol in not_found_stocks:
+            print(f"  {symbol}")
+
+    if failed_merge_stocks:
+        print(f"\nStocks with failed merges due to overlap validation ({len(failed_merge_stocks)} symbols):")
+        for symbol, error in failed_merge_stocks.items():
+            print(f"  {symbol}: {error}")
+
+    if empty_merge_stocks:
+        print(f"\nStocks with empty data after merge ({len(empty_merge_stocks)} symbols):")
+        for symbol in empty_merge_stocks:
             print(f"  {symbol}")
 
     print("="*60)

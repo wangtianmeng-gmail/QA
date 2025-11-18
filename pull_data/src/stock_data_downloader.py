@@ -306,7 +306,7 @@ class ProgressTracker:
             Path to the timing CSV file
         """
         timestamp = datetime.now(self.et_tz).strftime("%Y%m%d_%H%M%S")
-        timing_filename = f"stock_download_v3_{timestamp}.csv"
+        timing_filename = f"_report_stock_download_v3_{timestamp}.csv"
         timing_csv_path = self.output_dir / timing_filename
 
         header = "symbol,chunk_number,retry_attempt,req_id,chunk_start_time,chunk_end_time," \
@@ -1251,7 +1251,7 @@ def main():
 
     # Set up logging to both console and file
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file = manager.output_dir / f"stock_download_v3_{timestamp}.log"
+    log_file = manager.output_dir / f"_log_stock_download_v3_{timestamp}.log"
 
     # Configure logging levels for each component
     # Available levels: logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
