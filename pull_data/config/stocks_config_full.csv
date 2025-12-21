@@ -96,7 +96,6 @@ MDLZ,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Mondelez International In
 CL,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Colgate-Palmolive Company,Consumer Goods,NYSE,Oral care and personal care products
 KMB,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Kimberly-Clark Corporation,Consumer Goods,NYSE,Personal care products - Kleenex and Huggies
 GIS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,General Mills Inc.,Consumer Goods,NYSE,Food products - cereals and packaged foods
-K,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Kellogg Company,Consumer Goods,NYSE,Breakfast cereals and snack foods
 GE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,General Electric Company,Industrial,NYSE,Diversified industrial conglomerate - aviation and power
 HON,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Honeywell International Inc.,Industrial,NASDAQ,Diversified technology and manufacturing
 UPS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,United Parcel Service Inc.,Industrial,NYSE,Package delivery and supply chain management
@@ -115,7 +114,6 @@ SPGI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,S&P Global Inc.,Financial
 CME,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,CME Group Inc.,Financial Services,NASDAQ,Derivatives marketplace
 ICE,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Intercontinental Exchange Inc.,Financial Services,NYSE,Financial and commodity exchanges operator
 FIS,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Fidelity National Information Services Inc.,Financial Services,NYSE,Financial services technology
-FI,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Fiserv Inc.,Financial Services,NYSE,Fidelity National Information Services
 ADP,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Automatic Data Processing Inc.,Financial Services,NASDAQ,Payroll and human resources services
 T,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,AT&T Inc.,Telecommunications,NYSE,Telecommunications and media services
 VZ,STK,USD,SMART,0.1,5 secs,TRADES,20250102 19:00:00,Verizon Communications Inc.,Telecommunications,NYSE,Wireless telecommunications carrier
