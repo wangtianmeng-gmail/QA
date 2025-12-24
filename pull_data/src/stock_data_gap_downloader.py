@@ -30,7 +30,7 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, Optional, List, Tuple, Set
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 import logging
 import pytz
 import re
@@ -375,6 +375,68 @@ class GapAnalyzer:
         self.et_tz = et_tz
         self.logger = logging.getLogger('GapAnalyzer')
 
+    def calculate_chunk_end_from_reference(self, start_datetime: datetime,
+                                          aapl_dates_list: List[str],
+                                          bar_size: str) -> datetime:
+        """
+        Calculate chunk end time based on AAPL reference dates (actual trading timestamps).
+
+        Instead of adding 3 hours of calendar time, this finds the Nth trading timestamp
+        in the AAPL reference data, where N = number of bars in CHUNK_HOURS.
+
+        Args:
+            start_datetime: Start time of the chunk
+            aapl_dates_list: Sorted list of AAPL reference dates
+            bar_size: Bar size (e.g., "5 secs") to calculate number of bars
+
+        Returns:
+            End datetime based on actual trading timestamps
+        """
+        # Calculate number of bars in CHUNK_HOURS
+        seconds_per_bar = parse_bar_size_to_seconds(bar_size)
+        bars_per_chunk = int((CHUNK_HOURS * 3600) / seconds_per_bar)
+
+        # Convert start_datetime to string format matching AAPL dates
+        start_str = start_datetime.strftime("%Y%m%d %H:%M:%S US/Eastern")
+
+        # Find the start position in AAPL dates
+        try:
+            start_idx = aapl_dates_list.index(start_str)
+        except ValueError:
+            # If exact start not found, find the next available timestamp
+            self.logger.warning(f"Start time {start_str} not found in AAPL reference, finding next available")
+            for idx, date_str in enumerate(aapl_dates_list):
+                if date_str >= start_str:
+                    start_idx = idx
+                    break
+            else:
+                # If no future date found, use the last date + duration as fallback
+                self.logger.error(f"No AAPL reference date >= {start_str}, using calendar time fallback")
+                return start_datetime + timedelta(hours=CHUNK_HOURS)
+
+        # Calculate end index (start + number of bars for chunk duration)
+        end_idx = start_idx + bars_per_chunk
+
+        # Check if end_idx exceeds AAPL reference data
+        if end_idx >= len(aapl_dates_list):
+            # Use the last available timestamp + one bar interval
+            end_str = aapl_dates_list[-1]
+            end_datetime = self._parse_date(end_str) + timedelta(seconds=seconds_per_bar)
+            self.logger.warning(
+                f"Chunk end exceeds AAPL reference (need idx {end_idx}, have {len(aapl_dates_list)}), "
+                f"using last timestamp + 1 bar: {end_datetime}"
+            )
+        else:
+            # Get the end timestamp from AAPL reference
+            end_str = aapl_dates_list[end_idx]
+            end_datetime = self._parse_date(end_str)
+
+        self.logger.info(
+            f"Chunk: {start_str} -> {end_str} ({bars_per_chunk} bars across trading days)"
+        )
+
+        return end_datetime
+
     def find_gaps(self, master_dates: Set[str], stock_dates: Set[str]) -> List[str]:
         """
         Find missing dates in stock data compared to master (AAPL).
@@ -577,22 +639,28 @@ class GapFillManager:
 
         return stock_configs
 
-    def load_aapl_reference(self) -> Tuple[Optional[pd.DataFrame], Optional[Set[str]]]:
-        """Load AAPL data as reference."""
+    def load_aapl_reference(self) -> Tuple[Optional[pd.DataFrame], Optional[Set[str]], Optional[List[str]]]:
+        """Load AAPL data as reference.
+
+        Returns:
+            Tuple of (dataframe, dates_set, dates_list)
+            - dates_list is sorted for chunk calculation based on trading timestamps
+        """
         aapl_file = self._find_latest_csv('AAPL', self.data_dir)
 
         if aapl_file is None:
             self.logger.error("AAPL reference file not found")
-            return None, None
+            return None, None, None
 
         try:
             df = pd.read_csv(aapl_file)
             self.logger.info(f"Loaded AAPL reference: {len(df)} rows from {aapl_file.name}")
-            dates = set(df['Date'].tolist())
-            return df, dates
+            dates_list = df['Date'].tolist()  # Already sorted if CSV is sorted
+            dates_set = set(dates_list)
+            return df, dates_set, dates_list
         except Exception as e:
             self.logger.error(f"Error loading AAPL reference: {e}")
-            return None, None
+            return None, None, None
 
     def load_stock_data(self, symbol: str) -> Tuple[Optional[pd.DataFrame], Optional[Set[str]]]:
         """Load stock data."""
@@ -665,9 +733,15 @@ class GapFillManager:
 
         return False
 
-    def process_stock(self, config: StockConfig, aapl_dates: Set[str]) -> bool:
+    def process_stock(self, config: StockConfig, aapl_dates: Set[str],
+                     aapl_dates_list: List[str]) -> bool:
         """
         Process a single stock to identify and fill gaps.
+
+        Args:
+            config: Stock configuration
+            aapl_dates: Set of AAPL dates for gap detection
+            aapl_dates_list: Sorted list of AAPL dates for chunk calculation
 
         Returns:
             True if processing completed successfully, False otherwise
@@ -700,9 +774,9 @@ class GapFillManager:
         # Group gaps into ranges (pass bar_size for correct interval calculation)
         gap_ranges = self.gap_analyzer.group_gaps_into_ranges(missing_dates, config.bar_size)
 
-        # Download data to fill gaps (pass stock_df for overlap validation)
+        # Download data to fill gaps (pass stock_df, aapl_dates_list for overlap validation and chunk calculation)
         filled_data = self._download_gap_data(
-            config, gap_ranges, stock_df, stock_dates
+            config, gap_ranges, stock_df, stock_dates, aapl_dates_list
         )
 
         # Save results
@@ -713,9 +787,10 @@ class GapFillManager:
     def _download_gap_data(self, config: StockConfig,
                            gap_ranges: List[GapRange],
                            original_df: pd.DataFrame,
-                           original_dates: Set[str]) -> List[Dict]:
+                           original_dates: Set[str],
+                           aapl_dates_list: List[str]) -> List[Dict]:
         """
-        Download data to fill gaps using 3-hour chunks.
+        Download data to fill gaps using 3-hour chunks based on AAPL trading timestamps.
         Validates overlap and extracts only missing data.
         Logs all chunk attempts to consolidated log.
 
@@ -724,6 +799,7 @@ class GapFillManager:
             gap_ranges: List of gap ranges to fill
             original_df: Original stock dataframe for overlap validation
             original_dates: Set of existing dates
+            aapl_dates_list: Sorted list of AAPL reference dates for chunk calculation
 
         Returns:
             List of filled data
@@ -750,10 +826,11 @@ class GapFillManager:
             while current_start < gap_end:
                 chunk_num += 1
 
-                # Always use 3-hour chunks (fixed duration)
-                # This may download data beyond the gap, but _validate_and_extract_gap_data
-                # will validate overlap and extract only the missing portion
-                chunk_end = current_start + timedelta(hours=CHUNK_HOURS)
+                # Calculate chunk end based on AAPL reference trading timestamps
+                # instead of simple calendar time addition
+                chunk_end = self.gap_analyzer.calculate_chunk_end_from_reference(
+                    current_start, aapl_dates_list, config.bar_size
+                )
 
                 # Create chunk spec
                 chunk_spec = ChunkSpec(
@@ -780,9 +857,7 @@ class GapFillManager:
                     validated_data, validation_error = self._validate_and_extract_gap_data(
                         result.data,
                         original_df,
-                        original_dates,
-                        gap_range.start_date,
-                        gap_range.end_date
+                        original_dates
                     )
 
                     if validation_error:
@@ -848,7 +923,7 @@ class GapFillManager:
                         f"Failed to download chunk {chunk_num}"
                     )
 
-                # Move to next chunk (always 3 hours forward)
+                # Move to next chunk (using the calculated chunk_end instead of adding 3 hours)
                 current_start = chunk_end
 
                 # Wait between chunks
@@ -858,9 +933,7 @@ class GapFillManager:
 
     def _validate_and_extract_gap_data(self, downloaded_data: List[Dict],
                                         original_df: pd.DataFrame,
-                                        original_dates: Set[str],
-                                        gap_start: datetime,
-                                        gap_end: datetime) -> Tuple[List[Dict], Optional[str]]:
+                                        original_dates: Set[str]) -> Tuple[List[Dict], Optional[str]]:
         """
         Validate overlapping data and extract only the missing portion.
 
@@ -872,8 +945,6 @@ class GapFillManager:
             downloaded_data: Data downloaded from IB API
             original_df: Original stock dataframe
             original_dates: Set of existing dates
-            gap_start: Start of gap range
-            gap_end: End of gap range
 
         Returns:
             Tuple of (validated_data, error_message)
@@ -897,6 +968,13 @@ class GapFillManager:
             f"Downloaded {len(downloaded_data)} bars: "
             f"{len(overlapping_data)} overlap, {len(missing_data)} new"
         )
+
+        # If no new data (all overlap), skip validation and return empty
+        if not missing_data:
+            self.logger.info(
+                "No new data found (all downloaded bars already exist), skipping validation"
+            )
+            return [], None
 
         # If no overlap, all data is new (large gap)
         if not overlapping_data:
@@ -1104,9 +1182,9 @@ def main():
 
         # Load AAPL reference
         print("\nLoading AAPL reference data...")
-        aapl_df, aapl_dates = manager.load_aapl_reference()
+        aapl_df, aapl_dates, aapl_dates_list = manager.load_aapl_reference()
 
-        if aapl_df is None or aapl_dates is None:
+        if aapl_df is None or aapl_dates is None or aapl_dates_list is None:
             print("ERROR: Could not load AAPL reference data")
             return
 
@@ -1122,7 +1200,7 @@ def main():
 
         # Process each stock
         for config in stock_configs:
-            manager.process_stock(config, aapl_dates)
+            manager.process_stock(config, aapl_dates, aapl_dates_list)
             time.sleep(WAIT_TIME_BETWEEN_REQUESTS)
 
         print("\n" + "="*80)
