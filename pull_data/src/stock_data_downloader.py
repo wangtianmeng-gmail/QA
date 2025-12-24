@@ -66,7 +66,7 @@ TRADING_HOURS_EXTENDED = 16.0  # RTH + typical extended sessions (tune as needed
 DOWNLOAD_TIMEOUT_SECONDS = 30  # Default timeout for download requests
 REQUEST_ID_MULTIPLIER = 10000  # Multiplier for base request ID calculation
 CHUNK_HOURS = 3.0              # Default hours per download chunk
-MAX_CHUNK_RETRIES = 3          # Maximum retries for chunk download failures
+MAX_CHUNK_ATTEMPTS = 3         # Maximum attempts for chunk download (1 original + 2 retries)
 WAIT_TIME_BETWEEN_REQUESTS = 2.0 # Wait time (seconds) between API requests to avoid rate limiting
                                  # Timing breakdown for multiple stocks:
                                  # - Download chunk 1 for Stock A → wait 2s → chunk 2 → wait 2s → chunk 3 → ... → wait 2s → Start Stock B
@@ -549,22 +549,22 @@ class ChunkDownloader:
         self.logger = logging.getLogger('ChunkDownloader')
 
     def download_chunk_with_retry(self, chunk_spec: ChunkSpec, stock_num: int,
-                                   max_retries: int = MAX_CHUNK_RETRIES) -> Optional[ChunkResult]:
+                                   max_attempts: int = MAX_CHUNK_ATTEMPTS) -> Optional[ChunkResult]:
         """
-        Download a chunk with retry logic (max 3 retries by default).
+        Download a chunk with retry logic (max 3 attempts by default).
 
         Args:
             chunk_spec: Chunk specification (contains req_id for first attempt)
             stock_num: Stock number for request ID generation (used for retry attempts)
-            max_retries: Maximum retry attempts (default: MAX_CHUNK_RETRIES)
+            max_attempts: Maximum attempts (default: MAX_CHUNK_ATTEMPTS)
 
         Returns:
-            ChunkResult with download data and timing info, or None if all retries failed
+            ChunkResult with download data and timing info, or None if all attempts failed
         """
-        for retry_attempt in range(max_retries):
+        for retry_attempt in range(max_attempts):
             if retry_attempt > 0:
                 self.logger.warning(
-                    f"Retry {retry_attempt}/{max_retries - 1} for {chunk_spec.symbol} chunk {chunk_spec.chunk_num}"
+                    f"Retry {retry_attempt}/{max_attempts - 1} for {chunk_spec.symbol} chunk {chunk_spec.chunk_num}"
                 )
                 time.sleep(WAIT_TIME_BETWEEN_REQUESTS)
 
@@ -587,7 +587,7 @@ class ChunkDownloader:
                 return result
 
         self.logger.error(
-            f"Failed to download {chunk_spec.symbol} chunk {chunk_spec.chunk_num} after {max_retries} attempts"
+            f"Failed to download {chunk_spec.symbol} chunk {chunk_spec.chunk_num} after {max_attempts} attempts"
         )
         return None
 
