@@ -779,8 +779,12 @@ class GapFillManager:
             config, gap_ranges, stock_df, stock_dates, aapl_dates_list
         )
 
-        # Save results
-        self._save_results(config.symbol, stock_df, filled_data)
+        # Only save results if we actually filled data
+        if filled_data:
+            self._save_results(config.symbol, stock_df, filled_data)
+            self.logger.info(f"{config.symbol}: Saved gapfilled data with {len(filled_data)} new bars")
+        else:
+            self.logger.info(f"{config.symbol}: No data filled, skipping save (original file unchanged)")
 
         return True
 
