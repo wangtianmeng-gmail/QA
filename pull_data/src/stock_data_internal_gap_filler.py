@@ -6,7 +6,7 @@ This script processes existing stock CSV files to identify and fill internal gap
 1. Reading all CSV files in the data folder
 2. Checking the HasGaps column for True values
 3. For stocks with HasGaps = True:
-   - Finding consecutive gap sequences larger than 100 bars
+   - Finding consecutive gap sequences larger than 40 bars
    - Attempting to re-download those gap sequences using IB API in 3-hour chunks
    - If new download succeeds (non-empty), replacing the gap and setting HasGaps = False
    - If new download is still empty, leaving HasGaps = True
@@ -36,7 +36,7 @@ CHUNK_HOURS = 3.0              # Hours per download chunk (always use 3-hour chu
 DOWNLOAD_TIMEOUT_SECONDS = 30  # Timeout for download requests
 MAX_CHUNK_ATTEMPTS = 1         # Maximum attempts for chunk download
 WAIT_TIME_BETWEEN_REQUESTS = 2.0  # Wait time between API requests
-MIN_CONSECUTIVE_GAP_SIZE = 100  # Minimum consecutive gap size to trigger re-download
+MIN_CONSECUTIVE_GAP_SIZE = 40  # Minimum consecutive gap size to trigger re-download
 IB_HOST = "127.0.0.1"          # IB host address
 IB_PORT = 7497                 # IB port (7497 for TWS, 4001 for IB Gateway)
 IB_CLIENT_ID = 3               # Client ID (different from other scripts)
@@ -511,6 +511,7 @@ class InternalGapFiller:
     def find_consecutive_gaps(self, df: pd.DataFrame) -> List[ConsecutiveGapRange]:
         """
         Find consecutive gap ranges with HasGaps = True that exceed MIN_CONSECUTIVE_GAP_SIZE.
+        Optimized version using vectorized operations for better performance.
 
         Args:
             df: DataFrame with HasGaps column
@@ -522,9 +523,12 @@ class InternalGapFiller:
         current_start_idx: Optional[int] = None
         current_count = 0
 
-        for idx in range(len(df)):
-            has_gap = df.iloc[idx]['HasGaps']
+        # Extract HasGaps column as numpy array for fast iteration
+        has_gaps_array = df['HasGaps'].values
+        dates_array = df['Date'].values
+        df_len = len(df)
 
+        for idx, has_gap in enumerate(has_gaps_array):
             if has_gap == True:
                 if current_start_idx is None:
                     # Start new consecutive range
@@ -537,8 +541,8 @@ class InternalGapFiller:
                 # End of consecutive range
                 if current_start_idx is not None and current_count >= MIN_CONSECUTIVE_GAP_SIZE:
                     # Save this range
-                    start_date = self._parse_date(df.iloc[current_start_idx]['Date'])
-                    end_date = self._parse_date(df.iloc[idx - 1]['Date'])
+                    start_date = self._parse_date(dates_array[current_start_idx])
+                    end_date = self._parse_date(dates_array[idx - 1])
 
                     consecutive_ranges.append(ConsecutiveGapRange(
                         start_index=current_start_idx,
@@ -559,19 +563,19 @@ class InternalGapFiller:
 
         # Handle case where gaps extend to end of file
         if current_start_idx is not None and current_count >= MIN_CONSECUTIVE_GAP_SIZE:
-            start_date = self._parse_date(df.iloc[current_start_idx]['Date'])
-            end_date = self._parse_date(df.iloc[len(df) - 1]['Date'])
+            start_date = self._parse_date(dates_array[current_start_idx])
+            end_date = self._parse_date(dates_array[df_len - 1])
 
             consecutive_ranges.append(ConsecutiveGapRange(
                 start_index=current_start_idx,
-                end_index=len(df) - 1,
+                end_index=df_len - 1,
                 gap_count=current_count,
                 start_datetime=start_date,
                 end_datetime=end_date
             ))
 
             self.logger.info(
-                f"Found consecutive gap at end: idx {current_start_idx} to {len(df) - 1} "
+                f"Found consecutive gap at end: idx {current_start_idx} to {df_len - 1} "
                 f"({current_count} bars, {start_date} to {end_date})"
             )
 
@@ -613,7 +617,7 @@ class InternalGapFiller:
                 return True
 
             # Try to re-download each consecutive gap
-            filled_any_gaps = False
+            total_bars_filled = 0
 
             for gap_range in consecutive_gaps:
                 self.logger.info(
@@ -629,7 +633,7 @@ class InternalGapFiller:
                 if filled_data:
                     # Replace gap data and set HasGaps = False
                     self._replace_gap_data(df, gap_range, filled_data)
-                    filled_any_gaps = True
+                    total_bars_filled += len(filled_data)
                     self.logger.info(
                         f"Successfully filled gap with {len(filled_data)} bars, set HasGaps = False"
                     )
@@ -638,8 +642,12 @@ class InternalGapFiller:
                         f"Failed to fill gap (empty download), leaving HasGaps = True"
                     )
 
-            # Always save updated CSV file
-            self._save_updated_file(file_info.symbol, df, filled_any_gaps)
+            # Only save updated CSV file if bars were actually filled
+            if total_bars_filled > 0:
+                self._save_updated_file(file_info.symbol, df, total_bars_filled)
+            else:
+                self.logger.info(f"{file_info.symbol}: No bars filled, skipping CSV save")
+                print(f"{file_info.symbol}: No bars filled, skipping CSV save")
 
             return True
 
@@ -842,27 +850,27 @@ class InternalGapFiller:
             return f"{symbol}_saved_{save_timestamp}{suffix}.csv"
 
     def _save_updated_file(self, symbol: str, df: pd.DataFrame,
-                           filled_gaps: bool) -> None:
+                           bars_filled: int) -> None:
         """
         Save updated CSV file.
 
         Args:
             symbol: Stock symbol
             df: Updated dataframe
-            filled_gaps: Whether any gaps were filled
+            bars_filled: Number of bars filled
         """
         timestamp = datetime.now(self.et_tz).strftime("%Y%m%d_%H%M%S")
 
         # Generate new filename with start and end timestamps from actual data
-        suffix = "_gapfilled" if filled_gaps else "_processed"
+        suffix = "_gapfilled"
         new_filename = self._generate_filename(df, symbol, timestamp, suffix)
         new_path = self.data_dir / new_filename
 
         # Save updated data
         df.to_csv(new_path, index=False)
 
-        self.logger.info(f"Saved updated file: {new_filename}")
-        print(f"Saved: {new_filename}")
+        self.logger.info(f"Saved updated file: {new_filename} ({bars_filled} bars filled)")
+        print(f"Saved: {new_filename} ({bars_filled} bars filled)")
 
 
 def setup_logging(log_file: Path) -> None:
