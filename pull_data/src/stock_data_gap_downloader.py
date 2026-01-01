@@ -311,9 +311,9 @@ class ChunkDownloader:
             # Create event for this request
             self.ib_client.download_events[chunk_spec.req_id] = threading.Event()
 
-            # Calculate duration in seconds
-            duration = chunk_spec.end_datetime - chunk_spec.start_datetime
-            duration_seconds = int(duration.total_seconds())
+            # ALWAYS use 3 hours (10800 seconds) as duration, no time calculations
+            # This ensures IB API always requests exactly 2160 bars (at 5-sec intervals)
+            duration_seconds = int(CHUNK_HOURS * 3600)  # Hardcoded: 10800 seconds
 
             # Format end datetime for IB API
             end_datetime_str = chunk_spec.end_datetime.strftime("%Y%m%d %H:%M:%S US/Eastern")
@@ -377,7 +377,8 @@ class GapAnalyzer:
 
     def calculate_chunk_end_from_reference(self, start_datetime: datetime,
                                           aapl_dates_list: List[str],
-                                          bar_size: str) -> datetime:
+                                          bar_size: str,
+                                          max_end_datetime: Optional[datetime] = None) -> datetime:
         """
         Calculate chunk end time based on AAPL reference dates (actual trading timestamps).
 
@@ -388,6 +389,7 @@ class GapAnalyzer:
             start_datetime: Start time of the chunk
             aapl_dates_list: Sorted list of AAPL reference dates
             bar_size: Bar size (e.g., "5 secs") to calculate number of bars
+            max_end_datetime: Optional maximum end time (e.g., gap end) to constrain chunk
 
         Returns:
             End datetime based on actual trading timestamps
@@ -414,14 +416,38 @@ class GapAnalyzer:
                 self.logger.error(f"No AAPL reference date >= {start_str}, using calendar time fallback")
                 return start_datetime + timedelta(hours=CHUNK_HOURS)
 
-        # Calculate end index (start + number of bars for chunk duration)
-        end_idx = start_idx + bars_per_chunk
+        # Calculate nominal end index (start + number of bars for chunk duration)
+        nominal_end_idx = start_idx + bars_per_chunk
+
+        # If max_end_datetime is specified, find its index in AAPL dates and limit chunk to it
+        if max_end_datetime is not None:
+            max_end_str = max_end_datetime.strftime("%Y%m%d %H:%M:%S US/Eastern")
+
+            # Find the index of max_end_datetime in AAPL dates
+            max_end_idx = None
+            try:
+                max_end_idx = aapl_dates_list.index(max_end_str)
+            except ValueError:
+                # If exact max_end not found, find the closest one that doesn't exceed it
+                for idx in range(len(aapl_dates_list) - 1, -1, -1):
+                    if aapl_dates_list[idx] <= max_end_str:
+                        max_end_idx = idx
+                        break
+
+            if max_end_idx is not None:
+                # Use the smaller of nominal_end_idx and max_end_idx
+                end_idx = min(nominal_end_idx, max_end_idx)
+            else:
+                end_idx = nominal_end_idx
+        else:
+            end_idx = nominal_end_idx
 
         # Check if end_idx exceeds AAPL reference data
         if end_idx >= len(aapl_dates_list):
             # Use the last available timestamp + one bar interval
             end_str = aapl_dates_list[-1]
             end_datetime = self._parse_date(end_str) + timedelta(seconds=seconds_per_bar)
+            actual_bars = len(aapl_dates_list) - start_idx
             self.logger.warning(
                 f"Chunk end exceeds AAPL reference (need idx {end_idx}, have {len(aapl_dates_list)}), "
                 f"using last timestamp + 1 bar: {end_datetime}"
@@ -430,9 +456,10 @@ class GapAnalyzer:
             # Get the end timestamp from AAPL reference
             end_str = aapl_dates_list[end_idx]
             end_datetime = self._parse_date(end_str)
+            actual_bars = end_idx - start_idx
 
         self.logger.info(
-            f"Chunk: {start_str} -> {end_str} ({bars_per_chunk} bars across trading days)"
+            f"Chunk: {start_str} -> {end_str} ({actual_bars} bars across trading days)"
         )
 
         return end_datetime
@@ -760,11 +787,14 @@ class GapFillManager:
         # Load stock data
         stock_df, stock_dates = self.load_stock_data(config.symbol)
 
+        # If no existing data, create empty DataFrame and download all AAPL dates
         if stock_df is None or stock_dates is None:
-            self.logger.warning(f"Skipping {config.symbol} - no data found")
-            return False
+            self.logger.info(f"{config.symbol}: No existing data found, creating new file from AAPL reference")
+            # Create empty DataFrame with correct columns
+            stock_df = pd.DataFrame(columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'WAP', 'BarCount', 'HasGaps'])
+            stock_dates = set()  # Empty set means all AAPL dates are missing
 
-        # Find gaps
+        # Find gaps (all AAPL dates if stock_dates is empty)
         missing_dates = self.gap_analyzer.find_gaps(aapl_dates, stock_dates)
 
         if not missing_dates:
@@ -813,7 +843,17 @@ class GapFillManager:
         # Create IB contract
         contract = self._create_contract(config)
 
+        # Calculate bars per chunk (always 2160 for 3 hours at 5-second bars)
+        seconds_per_bar = parse_bar_size_to_seconds(config.bar_size)
+        bars_per_chunk = int((CHUNK_HOURS * 3600) / seconds_per_bar)
+
+        # Convert aapl_dates_list to set for fast lookup in validation
+        aapl_dates_set = set(aapl_dates_list)
+
         chunk_num = 0
+
+        # Track global AAPL index across all gaps (don't reset between gaps)
+        current_idx = None
 
         for gap_range in gap_ranges:
             gap_duration_hours = (gap_range.end_date - gap_range.start_date).total_seconds() / 3600
@@ -823,27 +863,68 @@ class GapFillManager:
                 f"({gap_range.missing_count} missing bars, {gap_duration_hours:.2f} hours)"
             )
 
-            # Always use 3-hour chunks starting from gap start
-            current_start = gap_range.start_date
-            gap_end = gap_range.end_date + timedelta(seconds=5)  # Include end date
+            # Find gap start and end indices in AAPL dates
+            gap_start_str = gap_range.start_date.strftime("%Y%m%d %H:%M:%S US/Eastern")
+            try:
+                gap_start_idx = aapl_dates_list.index(gap_start_str)
+            except ValueError:
+                self.logger.error(f"Gap start {gap_start_str} not found in AAPL dates, skipping gap")
+                continue
 
-            while current_start < gap_end:
+            gap_end_str = gap_range.end_date.strftime("%Y%m%d %H:%M:%S US/Eastern")
+            try:
+                gap_end_idx = aapl_dates_list.index(gap_end_str)
+            except ValueError:
+                self.logger.error(f"Gap end {gap_end_str} not found in AAPL dates, skipping gap")
+                continue
+
+            # Initialize current_idx if this is the first gap, otherwise continue from previous
+            if current_idx is None:
+                current_idx = gap_start_idx
+            # If current_idx is behind this gap's start (e.g., after timeout/skip), jump to gap start
+            elif current_idx < gap_start_idx:
+                current_idx = gap_start_idx
+
+            # Process this gap (and potentially beyond) in fixed 2160-bar chunks
+            while current_idx <= gap_end_idx:
                 chunk_num += 1
 
-                # Calculate chunk end based on AAPL reference trading timestamps
-                # instead of simple calendar time addition
-                chunk_end = self.gap_analyzer.calculate_chunk_end_from_reference(
-                    current_start, aapl_dates_list, config.bar_size
+                # Always request exactly bars_per_chunk (2160) bars from AAPL reference
+                chunk_end_idx = current_idx + bars_per_chunk - 1
+
+                # Check if chunk_end_idx exceeds AAPL data
+                if chunk_end_idx >= len(aapl_dates_list):
+                    # Still download 2160 bars from API (hardcoded 3 hours)
+                    # but use last AAPL index to determine which data is valid
+                    chunk_end_idx = len(aapl_dates_list) - 1
+                    self.logger.info(
+                        f"Chunk {chunk_num} extends beyond AAPL boundary, "
+                        f"will download full 2160 bars but only extract valid data"
+                    )
+
+                # Get start and end datetime from AAPL dates at these indices
+                chunk_start_str = aapl_dates_list[current_idx]
+                chunk_end_str = aapl_dates_list[chunk_end_idx]
+                current_start = self.gap_analyzer._parse_date(chunk_start_str)
+                chunk_end = self.gap_analyzer._parse_date(chunk_end_str)
+
+                # Add 5 seconds buffer to chunk_end for IB API request to ensure it includes the exact end timestamp
+                # IB sometimes doesn't include the exact end time when it's the boundary
+                chunk_end_for_api = chunk_end + timedelta(seconds=5)
+
+                self.logger.info(
+                    f"Chunk {chunk_num}: AAPL idx [{current_idx}:{chunk_end_idx}] = "
+                    f"{bars_per_chunk} bars from {chunk_start_str} to {chunk_end_str}"
                 )
 
-                # Create chunk spec
+                # Create chunk spec (use buffered end time for API request)
                 chunk_spec = ChunkSpec(
                     req_id=self.req_id_gen.generate_id(),
                     symbol=config.symbol,
                     chunk_num=chunk_num,
                     contract=contract,
                     start_datetime=current_start,
-                    end_datetime=chunk_end,
+                    end_datetime=chunk_end_for_api,
                     bar_size=config.bar_size,
                     what_to_show=config.what_to_show,
                     use_rth=config.use_rth
@@ -857,11 +938,12 @@ class GapFillManager:
                 result = self.chunk_downloader.download_chunk_with_retry(chunk_spec)
 
                 if result and result.success:
-                    # Validate overlap and extract only missing data
+                    # Validate overlap and extract only missing data that exists in AAPL
                     validated_data, validation_error = self._validate_and_extract_gap_data(
                         result.data,
                         original_df,
-                        original_dates
+                        original_dates,
+                        aapl_dates_set
                     )
 
                     if validation_error:
@@ -927,8 +1009,8 @@ class GapFillManager:
                         f"Failed to download chunk {chunk_num}"
                     )
 
-                # Move to next chunk (using the calculated chunk_end instead of adding 3 hours)
-                current_start = chunk_end
+                # Move to next chunk by advancing exactly bars_per_chunk positions in AAPL list
+                current_idx += bars_per_chunk
 
                 # Wait between chunks
                 time.sleep(WAIT_TIME_BETWEEN_REQUESTS)
@@ -937,32 +1019,43 @@ class GapFillManager:
 
     def _validate_and_extract_gap_data(self, downloaded_data: List[Dict],
                                         original_df: pd.DataFrame,
-                                        original_dates: Set[str]) -> Tuple[List[Dict], Optional[str]]:
+                                        original_dates: Set[str],
+                                        aapl_dates: Set[str]) -> Tuple[List[Dict], Optional[str]]:
         """
-        Validate overlapping data and extract only the missing portion.
+        Validate overlapping data and extract only the missing portion that exists in AAPL.
 
-        For small gaps where we download 3 hours of data to meet IB API requirements,
-        this method checks if the overlapping data matches the existing data.
-        If it matches, extract only the missing portion. If not, report error.
+        CRITICAL: Only extract bars that exist in AAPL reference dates.
+        This ensures the stock data exactly matches AAPL date range.
 
         Args:
             downloaded_data: Data downloaded from IB API
             original_df: Original stock dataframe
-            original_dates: Set of existing dates
+            original_dates: Set of existing stock dates
+            aapl_dates: Set of AAPL reference dates (master date list)
 
         Returns:
             Tuple of (validated_data, error_message)
-            - validated_data: List of only missing bars if validation succeeds
+            - validated_data: List of only missing bars that exist in AAPL
             - error_message: None if success, error message if validation fails
         """
         if not downloaded_data:
             return [], "No data downloaded"
 
-        # Separate overlapping and missing data
+        # FIRST: Filter downloaded data to only include bars that exist in AAPL
+        aapl_filtered_data = [bar for bar in downloaded_data if bar['Date'] in aapl_dates]
+        non_aapl_bars = len(downloaded_data) - len(aapl_filtered_data)
+
+        if non_aapl_bars > 0:
+            self.logger.info(
+                f"Filtered out {non_aapl_bars} bars not in AAPL reference "
+                f"(keeping {len(aapl_filtered_data)} bars)"
+            )
+
+        # SECOND: Separate into overlapping (exist in stock) and missing (don't exist in stock)
         overlapping_data = []
         missing_data = []
 
-        for bar in downloaded_data:
+        for bar in aapl_filtered_data:
             if bar['Date'] in original_dates:
                 overlapping_data.append(bar)
             else:
